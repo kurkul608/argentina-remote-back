@@ -83,6 +83,7 @@ export class ChatsService {
     }
   }
   async getChatById(chatId: string) {
+    console.log('chat');
     const chat = await this.chatModel.findById(chatId);
 
     if (!chat) {

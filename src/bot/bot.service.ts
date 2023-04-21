@@ -98,23 +98,33 @@ export class BotService {
     };
   }
   async getChatTGAdmins(chatId: string) {
-    const chatInfo = await this.chatService.getChatById(chatId);
-    return await this.bot.telegram.getChatAdministrators(chatInfo.id);
+    const { tg_chat_info } = await this.chatService.getChatById(chatId);
+    return await this.bot.telegram.getChatAdministrators(
+      tg_chat_info.chat_info.id,
+    );
   }
   async promoteUserToAdmin(
     chatId: string,
     id: number,
     params: SetAdminPermissionsDto,
   ) {
-    const chatInfo = await this.chatService.getChatById(chatId);
-    return await this.bot.telegram.promoteChatMember(chatInfo.id, id, params);
+    const { tg_chat_info } = await this.chatService.getChatById(chatId);
+    return await this.bot.telegram.promoteChatMember(
+      tg_chat_info.chat_info.id,
+      id,
+      params,
+    );
   }
   async restrictAdminToUser(
     chatId: string,
     id: number,
     params: SetRestrictPermissionsDto,
   ) {
-    const chatInfo = await this.chatService.getChatById(chatId);
-    return await this.bot.telegram.restrictChatMember(chatInfo.id, id, params);
+    const { tg_chat_info } = await this.chatService.getChatById(chatId);
+    return await this.bot.telegram.restrictChatMember(
+      tg_chat_info.chat_info.id,
+      id,
+      params,
+    );
   }
 }
