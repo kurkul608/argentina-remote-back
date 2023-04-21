@@ -43,7 +43,7 @@ export class Post {
 
   @ApiProperty()
   @Prop({ type: Date, required: false })
-  scheduleAt: Date;
+  scheduleAt?: Date;
 
   @ApiProperty()
   @Prop({ type: Date, default: now() })
