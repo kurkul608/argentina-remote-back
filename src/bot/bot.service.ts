@@ -98,10 +98,12 @@ export class BotService {
     };
   }
   async getChatTGAdmins(chatId: string) {
-    const { tg_chat_info } = await this.chatService.getChatById(chatId);
-    const admins = await this.bot.telegram.getChatAdministrators(
-      tg_chat_info.chat_info.id,
-    );
+    const {
+      tg_chat_info: {
+        chat_info: { id },
+      },
+    } = await this.chatService.getChatById(chatId);
+    const admins = await this.bot.telegram.getChatAdministrators(id);
     return {
       admins,
     };
@@ -111,23 +113,23 @@ export class BotService {
     id: number,
     params: SetAdminPermissionsDto,
   ) {
-    const { tg_chat_info } = await this.chatService.getChatById(chatId);
-    return await this.bot.telegram.promoteChatMember(
-      tg_chat_info.chat_info.id,
-      id,
-      params,
-    );
+    const {
+      tg_chat_info: {
+        chat_info: { id: tgChatId },
+      },
+    } = await this.chatService.getChatById(chatId);
+    return await this.bot.telegram.promoteChatMember(tgChatId, id, params);
   }
   async restrictAdminToUser(
     chatId: string,
     id: number,
     params: SetRestrictPermissionsDto,
   ) {
-    const { tg_chat_info } = await this.chatService.getChatById(chatId);
-    return await this.bot.telegram.restrictChatMember(
-      tg_chat_info.chat_info.id,
-      id,
-      params,
-    );
+    const {
+      tg_chat_info: {
+        chat_info: { id: tgChatId },
+      },
+    } = await this.chatService.getChatById(chatId);
+    return await this.bot.telegram.restrictChatMember(tgChatId, id, params);
   }
 }
