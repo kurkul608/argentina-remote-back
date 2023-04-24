@@ -107,9 +107,11 @@ export class BotService {
         chat_info: { id },
       },
     } = await this.chatService.getChatById(chatId);
-    const admins = await this.bot.telegram.getChatAdministrators(id);
+    const data = await this.bot.telegram.getChatAdministrators(id);
+    const total = data.length;
     return {
-      admins,
+      data,
+      total,
     };
   }
 
