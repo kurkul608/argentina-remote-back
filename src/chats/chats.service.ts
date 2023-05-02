@@ -93,7 +93,7 @@ export class ChatsService {
     }
     return chat;
   }
-  async getAll(limit: number, offset: number, isHidden: boolean, q?: string) {
+  async getAll(limit: number, offset: number, isHidden?: boolean, q?: string) {
     const filters = {};
     if (typeof isHidden === 'boolean') {
       filters['is_hidden'] = isHidden;
