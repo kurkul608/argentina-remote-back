@@ -4,6 +4,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateChatDto } from './create-chat.dto';
 import { PaymentType } from '../payment/dto/create-payment.dto';
 import { MongoIdPipe } from '../pipes/mongo-id.pipe';
+import { GetChatsQueryDto } from 'src/chats/dto/query/get-chats-query.dto';
 
 @Controller('chats')
 @ApiTags('chats')
@@ -23,12 +24,9 @@ export class ChatsController {
     required: true,
   })
   @Get()
-  getAll(
-    @Query('limit') limit: number,
-    @Query('offset') offset: number,
-    @Query('isHidden') isHidden: boolean,
-  ) {
-    return this.chatsService.getAll(limit, offset, isHidden);
+  getAll(@Query() query: GetChatsQueryDto) {
+    const { limit, q, isHidden, offset } = query;
+    return this.chatsService.getAll(limit, offset, isHidden, q);
   }
   @ApiOperation({ summary: 'Return chat information' })
   @ApiResponse({ status: 200, type: Object })
