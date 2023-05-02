@@ -93,10 +93,13 @@ export class ChatsService {
     }
     return chat;
   }
-  async getAll(limit: number, offset: number, isHidden: boolean) {
+  async getAll(limit: number, offset: number, isHidden?: boolean, q?: string) {
     const filters = {};
     if (typeof isHidden === 'boolean') {
       filters['is_hidden'] = isHidden;
+    }
+    if (q) {
+      filters['tg_chat_info.chat_info.title'] = { $regex: new RegExp(q, 'i') };
     }
     const chatsFromDB = await this.chatModel
       .find({ ...filters })
