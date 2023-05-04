@@ -11,7 +11,6 @@ export class AppService {
   async test() {
     // await this.cacheManager.set('item', { key: 'test' });
     // const testItem = await this.cacheManager.get('item');
-    console.log('test item');
     return 'Hello,  thats test';
   }
 }
