@@ -40,7 +40,7 @@ export class CreatePostDto {
     description: 'Make post now, or not',
     required: true,
   })
-  @Transform(({ value }) => toBoolean(value))
+  // @Transform(({ value }) => toBoolean(value))
   @IsBoolean()
   post_now: boolean;
 
@@ -49,7 +49,8 @@ export class CreatePostDto {
     description: 'Pin post, or not',
     required: true,
   })
-  @Transform(({ value }) => toBoolean(value))
+  @IsOptional()
+  // @Transform(({ value }) => toBoolean(value))
   @IsBoolean()
   pin_message: boolean;
 

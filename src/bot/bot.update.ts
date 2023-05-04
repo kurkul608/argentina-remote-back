@@ -5,8 +5,6 @@ import {
   On,
   Start,
   Update,
-  InlineQuery,
-  TelegrafContextType,
   Action,
 } from 'nestjs-telegraf';
 import {
@@ -45,7 +43,6 @@ export class BotUpdate {
     @Message('chat') chat,
     @Ctx() ctx: Context,
   ) {
-    console.log(ctx);
     if (isPrivate(chat.type)) {
       const isOldUser = await this.userService.findById(from.id);
       if (!isOldUser) {
@@ -79,7 +76,6 @@ export class BotUpdate {
     }>,
     @Ctx() ctx: Context,
   ) {
-    console.log(ch);
     const botName = process.env.TELEGRAM_API_NAME;
     if (isPrivate(ctx.chat.type)) {
       await ctx.reply(
@@ -93,7 +89,6 @@ export class BotUpdate {
         if (isItsMe) {
           await ctx.reply('Здарова удаленщики');
           const chat = await this.chatsService.findById(ctx.chat.id);
-          console.log(chat);
           if (!chat) {
             await this.chatsService.create(ctx.chat as CreateChatDto);
           }

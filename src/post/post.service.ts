@@ -43,7 +43,7 @@ export class PostService {
       for (const chat of chats) {
         await this.messageService.sendManyMessages(
           dto.messages,
-          chat.id,
+          chat.tg_chat_info.chat_info.id,
           dto.pin_message,
         );
       }

@@ -19,15 +19,15 @@ export class Post {
 
   @ApiProperty()
   @Prop({ required: false })
-  tg_deleted_errors: [any];
+  tg_deleted_errors?: [any];
 
   @ApiProperty()
   @Prop({ type: Boolean, required: true, default: false })
-  tg_deleted: boolean;
+  tg_deleted?: boolean;
 
   @ApiProperty()
   @Prop({ type: Boolean, required: true, default: false })
-  pin_message: boolean;
+  pin_message?: boolean;
 
   @ApiProperty()
   @Prop({ required: true, type: [Types.ObjectId], ref: Chat.name })
