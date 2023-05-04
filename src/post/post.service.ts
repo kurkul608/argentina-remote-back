@@ -41,9 +41,10 @@ export class PostService {
     if (dto.post_now) {
       const chats = await this.chatsService.getChatsByIds(dto.chats);
       for (const chat of chats) {
+        console.log(chat);
         await this.messageService.sendManyMessages(
           dto.messages,
-          chat.id,
+          chat.tg_chat_info.chat_info.id,
           dto.pin_message,
         );
       }
