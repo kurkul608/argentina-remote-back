@@ -23,6 +23,7 @@ import { UserService } from '../users/user.service';
 import { Public } from '../auth/public-route.decorator';
 import { AuthService } from '../auth/auth.service';
 import tt from 'typegram';
+import { BotService } from 'src/bot/bot.service';
 
 @Update()
 export class BotUpdate {
@@ -34,6 +35,8 @@ export class BotUpdate {
     private readonly userService: UserService,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
+    @Inject(forwardRef(() => BotService))
+    private readonly botService: BotService,
   ) {}
 
   @Public()
@@ -76,6 +79,10 @@ export class BotUpdate {
     }>,
     @Ctx() ctx: Context,
   ) {
+    await this.botService.deleteMessageFromChat(
+      ctx.chat.id,
+      ctx.message.message_id,
+    );
     const botName = process.env.TELEGRAM_API_NAME;
     if (isPrivate(ctx.chat.type)) {
       await ctx.reply(
@@ -110,6 +117,10 @@ export class BotUpdate {
     },
     @Ctx() ctx: Context,
   ) {
+    await this.botService.deleteMessageFromChat(
+      ctx.chat.id,
+      ctx.message.message_id,
+    );
     const botName = process.env.TELEGRAM_API_NAME;
     if (member.is_bot && member.username === botName) {
       const chat = await this.chatsService.findById(ctx.chat.id);
@@ -119,6 +130,44 @@ export class BotUpdate {
       }
       return;
     }
+  }
+
+  @Public()
+  @On('pinned_message')
+  async pinnedMessage(@Ctx() ctx: Context) {
+    console.log(ctx);
+    await this.botService.deleteMessageFromChat(
+      ctx.chat.id,
+      ctx.message.message_id,
+    );
+    return;
+  }
+
+  @Public()
+  @On('message_auto_delete_timer_changed')
+  async autoDeleteTimer(@Ctx() ctx: Context) {
+    await this.botService.deleteMessageFromChat(
+      ctx.chat.id,
+      ctx.message.message_id,
+    );
+  }
+
+  @Public()
+  @On('video_chat_started')
+  async videoChatStarted(@Ctx() ctx: Context) {
+    await this.botService.deleteMessageFromChat(
+      ctx.chat.id,
+      ctx.message.message_id,
+    );
+  }
+
+  @Public()
+  @On('video_chat_ended')
+  async videoChatEnded(@Ctx() ctx: Context) {
+    await this.botService.deleteMessageFromChat(
+      ctx.chat.id,
+      ctx.message.message_id,
+    );
   }
 
   @Public()
@@ -206,7 +255,6 @@ export class BotUpdate {
     // console.log(ctx.update.callback_query.message);
     return;
   }
-
   // @Public()
   // @On('channel_post')
   // async channelPostHandler(@Ctx() ctx: Context) {

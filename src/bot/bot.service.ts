@@ -140,4 +140,8 @@ export class BotService {
     } = await this.chatService.getChatById(chatId);
     return await this.bot.telegram.restrictChatMember(tgChatId, id, params);
   }
+
+  async deleteMessageFromChat(chatId: string | number, id: number) {
+    return await this.bot.telegram.deleteMessage(chatId, id);
+  }
 }
