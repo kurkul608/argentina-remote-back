@@ -7,6 +7,7 @@ import tt from 'typegram';
 import { ChatsService } from '../chats/chats.service';
 import { SetRestrictPermissionsDto } from '../setting/dto/set-restrict-permissions.dto';
 import { SetAdminPermissionsDto } from '../setting/dto/set-admin-permissions.dto';
+import { isBot } from 'src/bot/bot.utils';
 
 // type Hideable<B> = B & { hide?: boolean };
 @Injectable()
@@ -143,5 +144,27 @@ export class BotService {
 
   async deleteMessageFromChat(chatId: number, id: number) {
     return await this.bot.telegram.deleteMessage(chatId, id);
+  }
+
+  async checkByBot(chatId: number, user: tt.User, from?: tt.User) {
+    isBot(user) && (await this.banUserWithClearMessages(chatId, user.id, from));
+    return;
+  }
+  async banUserWithClearMessages(chatId, userId: number, from?: tt.User) {
+    const admins = await this.bot.telegram.getChatAdministrators(chatId);
+    !!from &&
+      !admins.find((admin) => admin.user.id === from.id) &&
+      (await this.bot.telegram
+        .banChatMember(chatId, userId, undefined, {
+          revoke_messages: true,
+        })
+        .then(() => {
+          return this.bot.telegram.sendMessage(
+            chatId,
+            'The administrator has banned the addition of bots',
+          );
+        }));
+
+    return;
   }
 }

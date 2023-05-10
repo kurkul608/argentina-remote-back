@@ -68,21 +68,19 @@ export class BotUpdate {
   @Public()
   @On('new_chat_members')
   async newChatMember(
-    @Message('chat')
-    ch,
-    @Message('new_chat_members')
-    members: Array<{
-      id: number;
-      is_bot: boolean;
-      first_name: string;
-      username: string;
-    }>,
+    @Message('from')
+    from: tt.User,
+    @Message('new_chat_member')
+    member: tt.User,
     @Ctx() ctx: Context,
   ) {
     await this.botService.deleteMessageFromChat(
       ctx.chat.id,
       ctx.message.message_id,
     );
+
+    await this.botService.checkByBot(ctx.chat.id, member, from);
+
     const botName = process.env.TELEGRAM_API_NAME;
     if (isPrivate(ctx.chat.type)) {
       await ctx.reply(
@@ -90,11 +88,9 @@ export class BotUpdate {
       );
       return;
     } else {
-      if (members.find((member) => member.is_bot)) {
-        const isItsMe = members.find((member) => member.username === botName);
-
-        if (isItsMe) {
-          await ctx.reply('Здарова удаленщики');
+      if (member.is_bot) {
+        if (member.username === botName) {
+          // await ctx.reply('Здарова удаленщики');
           const chat = await this.chatsService.findById(ctx.chat.id);
           if (!chat) {
             await this.chatsService.create(ctx.chat as CreateChatDto);
@@ -109,12 +105,7 @@ export class BotUpdate {
   @On('left_chat_member')
   async leftChatMember(
     @Message('left_chat_member')
-    member: {
-      id: number;
-      is_bot: boolean;
-      first_name: string;
-      username: string;
-    },
+    member: tt.User,
     @Ctx() ctx: Context,
   ) {
     await this.botService.deleteMessageFromChat(
@@ -135,7 +126,6 @@ export class BotUpdate {
   @Public()
   @On('pinned_message')
   async pinnedMessage(@Ctx() ctx: Context) {
-    console.log(ctx);
     await this.botService.deleteMessageFromChat(
       ctx.chat.id,
       ctx.message.message_id,
@@ -250,8 +240,6 @@ export class BotUpdate {
     ctx: NarrowedContext<Context, tt.Update.CallbackQueryUpdate>,
     // @UpdateType() updateType: TelegrafUpdateType,
   ) {
-    // console.log(ctx.update.callback_query.data);
-    // console.log(ctx.update.callback_query.from);
     // console.log(ctx.update.callback_query.message);
     return;
   }
