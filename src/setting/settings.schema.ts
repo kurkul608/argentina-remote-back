@@ -12,6 +12,17 @@ export class Settings {
   remove_bots: boolean;
 
   @ApiProperty()
+  @Prop({ type: Object, required: true })
+  system_messages_notification: {
+    new_member: boolean;
+    left_member: boolean;
+    video_call_start: boolean;
+    video_call_end: boolean;
+    auto_delete_timer_changed: boolean;
+    pinned_message: boolean;
+  };
+
+  @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })
   chat: Types.ObjectId;
 }

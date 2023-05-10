@@ -15,6 +15,7 @@ import { CreateSettingsDto } from 'src/setting/dto/create-settings.dto';
 import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
+import { CleanServiceMessageDto } from 'src/setting/dto/clean-service-message.dto';
 
 @Injectable()
 export class SettingService {
@@ -55,6 +56,14 @@ export class SettingService {
     return this.settingsModel.create({
       ...dto,
       remove_bots: false,
+      system_messages_notification: {
+        new_member: true,
+        video_call_end: true,
+        video_call_start: true,
+        pinned_message: true,
+        auto_delete_timer_changed: true,
+        left_member: true,
+      },
       chat: chat._id,
     });
   }
@@ -104,5 +113,22 @@ export class SettingService {
     id: number,
   ) {
     return await this.botService.restrictAdminToUser(chatId, id, dto);
+  }
+
+  async changeSystemMessageNotifications(
+    dto: CleanServiceMessageDto,
+    settingsId: string,
+    token: string,
+  ) {
+    const settings = this.settingsModel.findById(settingsId);
+
+    if (!settings) {
+      throw new HttpException(
+        'Document (Settings) not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return await this.updateSettings(String(settingsId), dto, token);
   }
 }
