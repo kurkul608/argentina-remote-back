@@ -18,7 +18,7 @@ export interface ChatPermissions {
   can_manage_topics?: boolean;
 }
 
-export class SetRestrictPermissionsDto {
+export class SetRestrictPermissionsBodyDto {
   @ApiProperty({
     example: {
       can_send_messages: true,

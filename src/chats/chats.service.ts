@@ -12,6 +12,10 @@ import { CreateChatDto } from './create-chat.dto';
 import { BotService } from '../bot/bot.service';
 import { PaymentType } from '../payment/dto/create-payment.dto';
 import { PaymentService } from '../payment/payment.service';
+import { AuthService } from 'src/auth/auth.service';
+import { UserService } from 'src/users/user.service';
+import { SettingService } from 'src/setting/setting.service';
+import { CreateSettingsDto } from 'src/setting/dto/create-settings.dto';
 
 @Injectable()
 export class ChatsService {
@@ -21,12 +25,18 @@ export class ChatsService {
     private readonly botService: BotService,
     @Inject(forwardRef(() => PaymentService))
     private readonly paymentService: PaymentService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
+    @Inject(forwardRef(() => SettingService))
+    private readonly settingsService: SettingService,
   ) {}
 
-  async create(createChatDto: CreateChatDto) {
-    // const chatInfo = await this.botService.getChatInfoById(createChatDto.id);
+  async create(createChatDto: CreateChatDto, userTgId: number) {
+    const { _id } = await this.userService.findById(userTgId);
+
     const tgInfo = await this.botService.getChatTGInfo(createChatDto.id);
-    return this.chatModel.create({
+
+    const chat = await this.chatModel.create({
       ...createChatDto,
       is_hidden: !!createChatDto.isHidden,
       tg_chat_info: {
@@ -34,7 +44,13 @@ export class ChatsService {
         photos: tgInfo.photos,
         chat_members_count: tgInfo.chatMembersCount,
       },
+      owner: _id,
     });
+    const settingsDto: CreateSettingsDto = {};
+
+    await this.settingsService.createSettings(chat._id, settingsDto, _id);
+
+    return chat;
   }
 
   async findById(id: number) {
@@ -59,9 +75,15 @@ export class ChatsService {
   }
   async getChat(chatId: string) {
     const chat = await this.chatModel.findById(chatId);
-    if (chat) {
-      return chat;
+
+    if (!chat) {
+      throw new HttpException(
+        'Document (Chat) not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
+
+    return chat;
   }
   async getChatById(chatId: string) {
     const chat = await this.chatModel.findById(chatId);

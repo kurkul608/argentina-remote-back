@@ -93,7 +93,7 @@ export class BotUpdate {
           // await ctx.reply('Здарова удаленщики');
           const chat = await this.chatsService.findById(ctx.chat.id);
           if (!chat) {
-            await this.chatsService.create(ctx.chat as CreateChatDto);
+            await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
           }
           return;
         }
@@ -165,13 +165,13 @@ export class BotUpdate {
   async groupCreated(
     @Message('chat') chat: any,
     @Message('group_chat_created') flag: boolean,
-    @Message('from') user: any,
+    @Message('from') user: tt.User,
     @Ctx() ctx: Context,
   ) {
     if (flag) {
       const oldChat = await this.chatsService.findById(ctx.chat.id);
       if (!oldChat) {
-        await this.chatsService.create(chat as CreateChatDto);
+        await this.chatsService.create(chat as CreateChatDto, user.id);
       }
     }
   }
@@ -202,6 +202,7 @@ export class BotUpdate {
   @On('message')
   async messageHandler(
     @Message('text') msg: string,
+    @Message('from') user: tt.User,
     @Ctx()
     ctx: Context,
   ) {
@@ -211,7 +212,7 @@ export class BotUpdate {
     if (!isPrivate(ctx.chat.type)) {
       const chat = await this.chatsService.findById(ctx.chat.id);
       if (!chat) {
-        await this.chatsService.create(ctx.chat as CreateChatDto);
+        await this.chatsService.create(ctx.chat as CreateChatDto, user.id);
       }
     }
 

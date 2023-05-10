@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import tt from 'typegram';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/users/user.schema';
 
 export type ChatDocument = Chat & Document;
 
@@ -39,6 +40,10 @@ export class Chat {
   @ApiProperty()
   @Prop({ required: true, type: Boolean })
   is_hidden: boolean;
+
+  @ApiProperty()
+  @Prop({ required: true, type: Types.ObjectId, ref: User.name })
+  owner: Types.ObjectId;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);
