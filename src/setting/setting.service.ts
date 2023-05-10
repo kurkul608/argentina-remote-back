@@ -15,7 +15,7 @@ import { CreateSettingsDto } from 'src/setting/dto/create-settings.dto';
 import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
-import { CleanServiceMessageDto } from 'src/setting/dto/clean-service-message.dto';
+import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
 
 @Injectable()
 export class SettingService {
@@ -56,7 +56,7 @@ export class SettingService {
     return this.settingsModel.create({
       ...dto,
       remove_bots: false,
-      system_messages_notification: {
+      clear_system_messages: {
         new_member: true,
         video_call_end: true,
         video_call_start: true,
@@ -74,7 +74,6 @@ export class SettingService {
     token: string,
   ) {
     const { _id } = await this.authService.getUserInfo(token);
-
     const settings = await this.settingsModel.findById(settingsId);
 
     if (!settings) {
@@ -116,7 +115,7 @@ export class SettingService {
   }
 
   async changeSystemMessageNotifications(
-    dto: CleanServiceMessageDto,
+    dto: CleanServiceMessageBodyDto,
     settingsId: string,
     token: string,
   ) {

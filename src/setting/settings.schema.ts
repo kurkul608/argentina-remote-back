@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
+import { CleanServiceMessage } from 'src/setting/dto/body/clean-service-message-body.dto';
 
 export type SettingsDocument = Settings & Document;
 
@@ -12,8 +13,8 @@ export class Settings {
   remove_bots: boolean;
 
   @ApiProperty()
-  @Prop({ type: Object, required: true })
-  system_messages_notification: {
+  @Prop({ type: CleanServiceMessage, required: true })
+  clear_system_messages: {
     new_member: boolean;
     left_member: boolean;
     video_call_start: boolean;

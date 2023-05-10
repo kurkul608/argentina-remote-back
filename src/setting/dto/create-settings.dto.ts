@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsObject, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CleanServiceMessage } from 'src/setting/dto/body/clean-service-message-body.dto';
 
 export class CreateSettingsDto {
   @ApiProperty({
@@ -15,14 +17,8 @@ export class CreateSettingsDto {
     description: 'Should bot remove system notification',
     required: false,
   })
-  @IsObject()
   @IsOptional()
-  system_messages_notification?: {
-    new_member: boolean;
-    left_member: boolean;
-    video_call_start: boolean;
-    video_call_end: boolean;
-    auto_delete_timer_changed: boolean;
-    pinned_message: boolean;
-  };
+  @ValidateNested()
+  @Type(() => CleanServiceMessage)
+  clear_system_messages?: CleanServiceMessage;
 }

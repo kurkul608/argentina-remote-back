@@ -16,7 +16,6 @@ import { SetAdminPermissionsBodyDto } from 'src/setting/dto/body/set-admin-permi
 import { SetRestrictPermissionsBodyDto } from 'src/setting/dto/body/set-restrict-permissions-body.dto';
 import { Settings } from 'src/setting/settings.schema';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
-import { CleanServiceMessageDto } from 'src/setting/dto/clean-service-message.dto';
 
 @Controller('setting')
 @ApiTags('setting')
@@ -67,22 +66,5 @@ export class SettingController {
     const bearer = req.headers.authorization;
     const token = bearer.split('Bearer ')[1];
     return await this.settingService.updateSettings(settingsId, dto, token);
-  }
-
-  @ApiResponse({ status: 201, type: Settings })
-  @ApiOperation({ summary: 'Update clear messages' })
-  @Patch(':settingsId/clearSystemMessages')
-  async clearSystemMessages(
-    @Param('settingsId') settingsId: string,
-    @Req() req,
-    @Body() dto: CleanServiceMessageDto,
-  ) {
-    const bearer = req.headers.authorization;
-    const token = bearer.split('Bearer ')[1];
-    return await this.settingService.changeSystemMessageNotifications(
-      dto,
-      settingsId,
-      token,
-    );
   }
 }
