@@ -21,27 +21,8 @@ export class ChatsService {
     private readonly botService: BotService,
     @Inject(forwardRef(() => PaymentService))
     private readonly paymentService: PaymentService,
-  ) {
-    // this.updateAllChats();
-    // this.findById(-943710240).then((data) => {
-    //   console.log(data);
-    // });
-  }
+  ) {}
 
-  // async updateAllChats() {
-  //   const chats = await this.chatModel.find();
-  //   for (const chat of chats) {
-  //     console.log(chat._id);
-  //     const tgInfo = await this.botService.getChatTGInfo(chat.id);
-  //     await chat.updateOne({
-  //       tg_chat_info: {
-  //         chat_info: tgInfo.chatInfo,
-  //         photos: tgInfo.photos,
-  //         chat_members_count: tgInfo.chatMembersCount,
-  //       },
-  //     });
-  //   }
-  // }
   async create(createChatDto: CreateChatDto) {
     // const chatInfo = await this.botService.getChatInfoById(createChatDto.id);
     const tgInfo = await this.botService.getChatTGInfo(createChatDto.id);
