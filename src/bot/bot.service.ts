@@ -5,8 +5,8 @@ import { MessageDocument } from '../message/message.schema';
 import { ButtonTypeEnum } from '../message/constants/button-type.enum';
 import tt from 'typegram';
 import { ChatsService } from '../chats/chats.service';
-import { SetRestrictPermissionsDto } from '../setting/dto/set-restrict-permissions.dto';
-import { SetAdminPermissionsDto } from '../setting/dto/set-admin-permissions.dto';
+import { SetRestrictPermissionsBodyDto } from 'src/setting/dto/body/set-restrict-permissions-body.dto';
+import { SetAdminPermissionsBodyDto } from 'src/setting/dto/body/set-admin-permissions-body.dto';
 import { isBot } from 'src/bot/bot.utils';
 
 // type Hideable<B> = B & { hide?: boolean };
@@ -119,7 +119,7 @@ export class BotService {
   async promoteUserToAdmin(
     chatId: string,
     id: number,
-    params: SetAdminPermissionsDto,
+    params: SetAdminPermissionsBodyDto,
   ) {
     const {
       tg_chat_info: {
@@ -132,7 +132,7 @@ export class BotService {
   async restrictAdminToUser(
     chatId: string,
     id: number,
-    params: SetRestrictPermissionsDto,
+    params: SetRestrictPermissionsBodyDto,
   ) {
     const {
       tg_chat_info: {

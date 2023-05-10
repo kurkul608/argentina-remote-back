@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional } from 'class-validator';
 
-export class SetAdminPermissionsDto {
+export class SetAdminPermissionsBodyDto {
   @ApiProperty({
     example: true,
     description:
