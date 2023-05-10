@@ -113,21 +113,4 @@ export class SettingService {
   ) {
     return await this.botService.restrictAdminToUser(chatId, id, dto);
   }
-
-  async changeSystemMessageNotifications(
-    dto: CleanServiceMessageBodyDto,
-    settingsId: string,
-    token: string,
-  ) {
-    const settings = this.settingsModel.findById(settingsId);
-
-    if (!settings) {
-      throw new HttpException(
-        'Document (Settings) not found',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return await this.updateSettings(String(settingsId), dto, token);
-  }
 }
