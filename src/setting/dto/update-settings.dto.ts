@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CleanServiceMessage } from 'src/setting/dto/body/clean-service-message-body.dto';
+import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
 import { IsCustomObject } from 'src/commoon/decorators/validate-custom-object.decorator';
 
 export class UpdateSettingsDto {
@@ -28,7 +28,7 @@ export class UpdateSettingsDto {
   })
   @IsOptional()
   @ValidateNested()
-  @Type(() => CleanServiceMessage)
+  @Type(() => CleanServiceMessageBodyDto)
   @IsCustomObject({
     new_member: true,
     video_call_end: false,
@@ -37,5 +37,5 @@ export class UpdateSettingsDto {
     auto_delete_timer_changed: false,
     left_member: false,
   })
-  clear_system_messages?: CleanServiceMessage;
+  clear_system_messages?: CleanServiceMessageBodyDto;
 }

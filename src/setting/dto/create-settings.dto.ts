@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CleanServiceMessage } from 'src/setting/dto/body/clean-service-message-body.dto';
+import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
 
 export class CreateSettingsDto {
   @ApiProperty({
@@ -19,6 +19,6 @@ export class CreateSettingsDto {
   })
   @IsOptional()
   @ValidateNested()
-  @Type(() => CleanServiceMessage)
-  clear_system_messages?: CleanServiceMessage;
+  @Type(() => CleanServiceMessageBodyDto)
+  clear_system_messages?: CleanServiceMessageBodyDto;
 }

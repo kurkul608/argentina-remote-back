@@ -1,7 +1,7 @@
 import { IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CleanServiceMessage {
+export class CleanServiceMessageDto {
   @ApiProperty()
   @IsBoolean()
   new_member: boolean;
@@ -23,5 +23,5 @@ export class CleanServiceMessage {
 }
 
 export class CleanServiceMessageBodyDto {
-  clear_system_messages: CleanServiceMessage;
+  clear_system_messages: CleanServiceMessageDto;
 }
