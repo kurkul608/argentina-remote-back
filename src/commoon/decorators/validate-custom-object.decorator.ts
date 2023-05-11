@@ -6,18 +6,10 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Settings, SettingsDocument } from 'src/setting/settings.schema';
-import { Model } from 'mongoose';
 
-@ValidatorConstraint({ name: 'Unique', async: true })
+@ValidatorConstraint({ name: 'IsCustomObject', async: true })
 @Injectable()
-export class UniqueConstraint implements ValidatorConstraintInterface {
-  constructor(
-    @InjectModel(Settings.name)
-    private readonly settingsModel: Model<SettingsDocument>,
-  ) {}
-
+export class CustomObjectConstraint implements ValidatorConstraintInterface {
   async validate(value: any, args: ValidationArguments): Promise<boolean> {
     const [exceptField = null] = args.constraints;
     if (!value) return false;
@@ -36,7 +28,7 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function Unique(
+export function IsCustomObject(
   exceptField: Record<string, unknown> = null,
   validationOptions?: ValidationOptions,
 ) {
@@ -46,7 +38,7 @@ export function Unique(
       propertyName: propertyName,
       options: validationOptions,
       constraints: [exceptField],
-      validator: UniqueConstraint,
+      validator: CustomObjectConstraint,
     });
   };
 }

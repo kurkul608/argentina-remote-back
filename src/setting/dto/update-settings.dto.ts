@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CleanServiceMessage } from 'src/setting/dto/body/clean-service-message-body.dto';
-import { Unique } from 'src/setting/helpers/validate-object-filed-decorator.helper';
+import { IsCustomObject } from 'src/commoon/decorators/validate-custom-object.decorator';
 
 export class UpdateSettingsDto {
   @ApiProperty({
@@ -29,7 +29,7 @@ export class UpdateSettingsDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => CleanServiceMessage)
-  @Unique({
+  @IsCustomObject({
     new_member: true,
     video_call_end: false,
     video_call_start: false,
