@@ -1,25 +1,24 @@
-import { IsBoolean } from 'class-validator';
+import { IsArray, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { MessageType } from 'src/setting/settings.schema';
+import { IsCustomArray } from 'src/commoon/decorators/validate-custom-array.decorator';
 
 export class CleanServiceMessageDto {
   @ApiProperty()
   @IsBoolean()
-  new_member: boolean;
+  clear_all: boolean;
+
   @ApiProperty()
-  @IsBoolean()
-  left_member: boolean;
-  @ApiProperty()
-  @IsBoolean()
-  video_call_start: boolean;
-  @ApiProperty()
-  @IsBoolean()
-  video_call_end: boolean;
-  @ApiProperty()
-  @IsBoolean()
-  auto_delete_timer_changed: boolean;
-  @ApiProperty()
-  @IsBoolean()
-  pinned_message: boolean;
+  @IsCustomArray([
+    'new_member',
+    'left_member',
+    'video_call_start',
+    'video_call_end',
+    'auto_delete_timer_changed',
+    'pinned_message',
+  ])
+  @IsArray()
+  message_types: MessageType[];
 }
 
 export class CleanServiceMessageBodyDto {

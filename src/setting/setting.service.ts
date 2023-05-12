@@ -15,7 +15,6 @@ import { CreateSettingsDto } from 'src/setting/dto/create-settings.dto';
 import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
-import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
 
 @Injectable()
 export class SettingService {
@@ -57,12 +56,8 @@ export class SettingService {
       ...dto,
       remove_bots: false,
       clear_system_messages: {
-        new_member: true,
-        video_call_end: true,
-        video_call_start: true,
-        pinned_message: true,
-        auto_delete_timer_changed: true,
-        left_member: true,
+        clear_all: false,
+        message_types: ['left_member'],
       },
       chat: chat._id,
     });

@@ -7,19 +7,17 @@ import {
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 
-@ValidatorConstraint({ name: 'IsCustomObject', async: true })
+@ValidatorConstraint({ name: 'IsCustomArray', async: true })
 @Injectable()
 export class CustomObjectConstraint implements ValidatorConstraintInterface {
   async validate(
-    value: Record<string, unknown>,
+    value: unknown[],
     args: ValidationArguments,
   ): Promise<boolean> {
-    const [exceptField = null] = args.constraints;
-    if (!value) return false;
-    if (!exceptField) return false;
-
-    for (const key of Object.keys(value)) {
-      if (!(key in exceptField)) {
+    const [exceptField = []] = args.constraints;
+    console.log(exceptField);
+    for (const key of value) {
+      if (!exceptField.includes(key)) {
         return false;
       }
     }
@@ -31,8 +29,8 @@ export class CustomObjectConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsCustomObject(
-  exceptField: Record<string, unknown> = null,
+export function IsCustomArray(
+  exceptField: unknown[] = [],
   validationOptions?: ValidationOptions,
 ) {
   return function (object: any, propertyName: string) {

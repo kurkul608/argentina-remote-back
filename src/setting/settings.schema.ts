@@ -5,7 +5,18 @@ import { Chat } from 'src/chats/chats.schema';
 import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
 
 export type SettingsDocument = Settings & Document;
-
+export enum MessageTypes {
+  'new_member',
+  'left_member',
+  'video_call_start',
+  'video_call_end',
+  'auto_delete_timer_changed',
+  'pinned_message',
+}
+export type MessageType = keyof typeof MessageTypes;
+export const ServiceMessageArray = Object.keys(MessageTypes).filter(
+  (k) => typeof MessageTypes[k as any] === 'number',
+);
 @Schema()
 export class Settings {
   @ApiProperty()
@@ -15,12 +26,8 @@ export class Settings {
   @ApiProperty()
   @Prop({ type: CleanServiceMessageBodyDto, required: true })
   clear_system_messages: {
-    new_member: boolean;
-    left_member: boolean;
-    video_call_start: boolean;
-    video_call_end: boolean;
-    auto_delete_timer_changed: boolean;
-    pinned_message: boolean;
+    clear_all: boolean;
+    message_types: MessageType[];
   };
 
   @ApiProperty()
