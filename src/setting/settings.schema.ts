@@ -14,9 +14,7 @@ export enum MessageTypes {
   'pinned_message',
 }
 export type MessageType = keyof typeof MessageTypes;
-export const ServiceMessageArray = Object.keys(MessageTypes).filter(
-  (k) => typeof MessageTypes[k as any] === 'number',
-);
+
 @Schema()
 export class Settings {
   @ApiProperty()
