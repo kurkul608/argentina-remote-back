@@ -10,12 +10,9 @@ import { Injectable } from '@nestjs/common';
 @ValidatorConstraint({ name: 'IsCustomArray', async: true })
 @Injectable()
 export class CustomObjectConstraint implements ValidatorConstraintInterface {
-  async validate(
-    value: unknown[],
-    args: ValidationArguments,
-  ): Promise<boolean> {
+  async validate<T>(value: T[], args: ValidationArguments): Promise<boolean> {
     const [exceptField = []] = args.constraints;
-    console.log(exceptField);
+
     for (const key of value) {
       if (!exceptField.includes(key)) {
         return false;
@@ -29,11 +26,11 @@ export class CustomObjectConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsCustomArray(
-  exceptField: unknown[] = [],
+export function IsCustomArray<T>(
+  exceptField: T[] = [],
   validationOptions?: ValidationOptions,
 ) {
-  return function (object: any, propertyName: string) {
+  return function <T>(object: T, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

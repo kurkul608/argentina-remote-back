@@ -10,11 +10,8 @@ import { Injectable } from '@nestjs/common';
 @ValidatorConstraint({ name: 'IsCustomObject', async: true })
 @Injectable()
 export class CustomObjectConstraint implements ValidatorConstraintInterface {
-  async validate(
-    value: Record<string, unknown>,
-    args: ValidationArguments,
-  ): Promise<boolean> {
-    const [exceptField = null] = args.constraints;
+  async validate<T>(value: T, args: ValidationArguments): Promise<boolean> {
+    const [exceptField] = args.constraints;
     if (!value) return false;
     if (!exceptField) return false;
 
@@ -31,11 +28,11 @@ export class CustomObjectConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsCustomObject(
-  exceptField: Record<string, unknown> = null,
+export function IsCustomObject<T>(
+  exceptField: T = null,
   validationOptions?: ValidationOptions,
 ) {
-  return function (object: any, propertyName: string) {
+  return function <T>(object: T, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
