@@ -3,17 +3,9 @@ import { Document, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
 import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
+import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 
 export type SettingsDocument = Settings & Document;
-export enum MessageTypes {
-  'new_member',
-  'left_member',
-  'video_call_start',
-  'video_call_end',
-  'auto_delete_timer_changed',
-  'pinned_message',
-}
-export type MessageType = keyof typeof MessageTypes;
 
 @Schema()
 export class Settings {
@@ -25,7 +17,7 @@ export class Settings {
   @Prop({ type: CleanServiceMessageBodyDto, required: true })
   clear_system_messages: {
     clear_all: boolean;
-    message_types: MessageType[];
+    message_types: ServiceMessageType[];
   };
 
   @ApiProperty()

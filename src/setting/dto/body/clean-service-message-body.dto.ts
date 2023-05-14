@@ -1,7 +1,16 @@
 import { IsArray, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { MessageType } from 'src/setting/settings.schema';
 import { IsCustomArray } from 'src/commoon/decorators/validate-custom-array.decorator';
+import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
+
+const serviceMessages: ServiceMessageType[] = [
+  'new_member',
+  'left_member',
+  'video_call_start',
+  'video_call_end',
+  'auto_delete_timer_changed',
+  'pinned_message',
+];
 
 export class CleanServiceMessageDto {
   @ApiProperty()
@@ -9,16 +18,9 @@ export class CleanServiceMessageDto {
   clear_all: boolean;
 
   @ApiProperty()
-  @IsCustomArray([
-    'new_member',
-    'left_member',
-    'video_call_start',
-    'video_call_end',
-    'auto_delete_timer_changed',
-    'pinned_message',
-  ])
+  @IsCustomArray(serviceMessages)
   @IsArray()
-  message_types: MessageType[];
+  message_types: ServiceMessageType[];
 }
 
 export class CleanServiceMessageBodyDto {
