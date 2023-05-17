@@ -8,6 +8,7 @@ import { ChatsService } from '../chats/chats.service';
 import { SetRestrictPermissionsBodyDto } from 'src/setting/dto/body/set-restrict-permissions-body.dto';
 import { SetAdminPermissionsBodyDto } from 'src/setting/dto/body/set-admin-permissions-body.dto';
 import { isBot } from 'src/bot/bot.utils';
+import { SettingService } from 'src/setting/setting.service';
 
 // type Hideable<B> = B & { hide?: boolean };
 @Injectable()
@@ -16,6 +17,8 @@ export class BotService {
     @InjectBot() private readonly bot: Telegraf<Context>,
     @Inject(forwardRef(() => ChatsService))
     private readonly chatService: ChatsService,
+    @Inject(forwardRef(() => SettingService))
+    private readonly settingService: SettingService,
   ) {}
 
   async sendMessage(
@@ -147,9 +150,17 @@ export class BotService {
   }
 
   async checkByBot(chatId: number, user: tt.User, from?: tt.User) {
-    isBot(user) && (await this.banUserWithClearMessages(chatId, user.id, from));
+    if (isBot(user)) {
+      const isNeedToRemove = (
+        await this.settingService.getSettings(['remove_bots'], chatId)
+      )?.remove_bots;
+
+      isNeedToRemove &&
+        (await this.banUserWithClearMessages(chatId, user.id, from));
+    }
     return;
   }
+
   async banUserWithClearMessages(chatId, userId: number, from?: tt.User) {
     const admins = await this.bot.telegram.getChatAdministrators(chatId);
     !!from &&
@@ -164,7 +175,6 @@ export class BotService {
             'The administrator has banned the addition of bots',
           );
         }));
-
     return;
   }
 }

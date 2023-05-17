@@ -53,13 +53,24 @@ export class ChatsService {
     return chat;
   }
 
-  async findById(id: number) {
-    return this.chatModel.findOne({ 'tg_chat_info.chat_info.id': id });
+  async findByTgId(id: number) {
+    const chat = await this.chatModel.findOne({
+      'tg_chat_info.chat_info.id': id,
+    });
+
+    if (!chat) {
+      throw new HttpException(
+        'Document (Chat) not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return chat;
   }
   async findAndUpdateId(id: number, newId: number) {
-    const chat = await this.findById(id);
+    const chat = await this.findByTgId(id);
     await chat.updateOne({ id: newId });
-    return await this.findById(newId);
+    return await this.findByTgId(newId);
   }
 
   async findAllByIds(ids: number[]) {

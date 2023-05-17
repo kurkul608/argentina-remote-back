@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
+import _ from 'lodash';
 import { BotService } from '../bot/bot.service';
 import { SetAdminPermissionsBodyDto } from 'src/setting/dto/body/set-admin-permissions-body.dto';
 import { SetRestrictPermissionsBodyDto } from 'src/setting/dto/body/set-restrict-permissions-body.dto';
@@ -15,6 +16,7 @@ import { CreateSettingsDto } from 'src/setting/dto/create-settings.dto';
 import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
+import { RedisClientService } from 'src/redis-client/redis-client.service';
 
 @Injectable()
 export class SettingService {
@@ -27,7 +29,44 @@ export class SettingService {
     private readonly chatsService: ChatsService,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
-  ) {}
+    @Inject(forwardRef(() => RedisClientService))
+    private readonly redisClientService: RedisClientService,
+  ) {
+    // this.redisClientService.setData('testKey', {
+    //   data: { text: 'text key, data, text' },
+    // });
+    // this.redisClientService
+    //   .getData('testKey')
+    //   .then((data) => console.log(data));
+    // this.settingsModel
+    //   .findById('645b09836542bc3cecf95fbd')
+    //   .then((data) => console.log(data));
+  }
+
+  getRedisKeyForSettings(chatId: number) {
+    return `chatId-${chatId}-settings`;
+  }
+
+  async getSettings(
+    settingsField: Array<keyof Settings>,
+    chatId: number,
+  ): Promise<Partial<Settings>> {
+    let settings = await this.redisClientService.getData(
+      this.getRedisKeyForSettings(chatId),
+    );
+
+    if (!settings) {
+      const chat = await this.chatsService.findByTgId(chatId);
+      settings = await this.settingsModel.findOne({ chat: chat._id });
+      await this.redisClientService.setData(
+        this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
+        {
+          ...settings,
+        },
+      );
+    }
+    return _.pick(settingsField, settings);
+  }
 
   async createSettings(
     chatId: string,
@@ -52,11 +91,21 @@ export class SettingService {
       );
     }
 
-    return this.settingsModel.create({
+    const settings = await this.settingsModel.create({
       ...dto,
       remove_bots: false,
       chat: chat._id,
     });
+
+    await this.redisClientService.setData(
+      this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
+      {
+        ...dto,
+        remove_bots: false,
+      },
+    );
+
+    return settings;
   }
 
   async updateSettings(
@@ -85,6 +134,18 @@ export class SettingService {
     }
 
     await settings.updateOne({ ...dto });
+
+    const redisData = await this.redisClientService.getData(
+      this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
+    );
+
+    await this.redisClientService.setData(
+      this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
+      {
+        ...redisData,
+        ...dto,
+      },
+    );
 
     return this.settingsModel.findById(settings.id);
   }
