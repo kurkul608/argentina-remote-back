@@ -91,7 +91,7 @@ export class BotUpdate {
       if (member.is_bot) {
         if (member.username === botName) {
           // await ctx.reply('Здарова удаленщики');
-          const chat = await this.chatsService.findById(ctx.chat.id);
+          const chat = await this.chatsService.findByTgId(ctx.chat.id);
           if (!chat) {
             await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
           }
@@ -114,7 +114,7 @@ export class BotUpdate {
     );
     const botName = process.env.TELEGRAM_API_NAME;
     if (member.is_bot && member.username === botName) {
-      const chat = await this.chatsService.findById(ctx.chat.id);
+      const chat = await this.chatsService.findByTgId(ctx.chat.id);
       if (chat) {
         chat.remove();
         return;
@@ -169,7 +169,7 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     if (flag) {
-      const oldChat = await this.chatsService.findById(ctx.chat.id);
+      const oldChat = await this.chatsService.findByTgId(ctx.chat.id);
       if (!oldChat) {
         await this.chatsService.create(chat as CreateChatDto, user.id);
       }
@@ -210,7 +210,7 @@ export class BotUpdate {
       return;
     }
     if (!isPrivate(ctx.chat.type)) {
-      const chat = await this.chatsService.findById(ctx.chat.id);
+      const chat = await this.chatsService.findByTgId(ctx.chat.id);
       if (!chat) {
         await this.chatsService.create(ctx.chat as CreateChatDto, user.id);
       }

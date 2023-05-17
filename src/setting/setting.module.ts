@@ -6,12 +6,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Settings, SettingsSchema } from 'src/setting/settings.schema';
 import { ChatsModule } from 'src/chats/chats.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { RedisClientModule } from 'src/redis-client/redis-client.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Settings.name, schema: SettingsSchema },
     ]),
+    forwardRef(() => RedisClientModule),
     forwardRef(() => BotModule),
     forwardRef(() => ChatsModule),
     forwardRef(() => AuthModule),

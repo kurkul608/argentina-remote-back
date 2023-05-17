@@ -38,7 +38,7 @@ export class PaymentService {
   }
 
   async getPaymentsByTypeAndChat(chatId: number, paymentType: PaymentType) {
-    const chat = await this.chatsService.findById(chatId);
+    const chat = await this.chatsService.findByTgId(chatId);
     if (chat) {
       const payments = await this.paymentModel
         .find({

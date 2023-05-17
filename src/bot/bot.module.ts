@@ -7,6 +7,7 @@ import { ChatsModule } from '../chats/chats.module';
 import { BotController } from './bot.controller';
 import { UserModule } from '../users/user.module';
 import { AuthModule } from '../auth/auth.module';
+import { SettingModule } from 'src/setting/setting.module';
 // import { TelegrafCustomModule } from '../telegraf-custom/telegraf-custom.module';
 
 @Module({
@@ -19,6 +20,7 @@ import { AuthModule } from '../auth/auth.module';
     //   token: process.env.TELEGRAM_API_KEY,
     // }),
     forwardRef(() => ChatsModule),
+    forwardRef(() => SettingModule),
     forwardRef(() => UserModule),
     forwardRef(() => AuthModule),
   ],
