@@ -17,6 +17,7 @@ import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
 import { RedisClientService } from 'src/redis-client/redis-client.service';
+import { serviceMessages } from 'src/setting/constants/sevice-message.constants';
 
 @Injectable()
 export class SettingService {
@@ -94,6 +95,10 @@ export class SettingService {
     const settings = await this.settingsModel.create({
       ...dto,
       remove_bots: false,
+      clear_system_messages: {
+        clear_all: false,
+        message_types: serviceMessages,
+      },
       chat: chat._id,
     });
 
