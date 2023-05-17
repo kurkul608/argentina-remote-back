@@ -15,6 +15,7 @@ import { CreateSettingsDto } from 'src/setting/dto/create-settings.dto';
 import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
+import { serviceMessages } from 'src/setting/constants/sevice-message.constants';
 
 @Injectable()
 export class SettingService {
@@ -55,6 +56,10 @@ export class SettingService {
     return this.settingsModel.create({
       ...dto,
       remove_bots: false,
+      clear_system_messages: {
+        clear_all: false,
+        message_types: serviceMessages,
+      },
       chat: chat._id,
     });
   }
@@ -65,7 +70,6 @@ export class SettingService {
     token: string,
   ) {
     const { _id } = await this.authService.getUserInfo(token);
-
     const settings = await this.settingsModel.findById(settingsId);
 
     if (!settings) {
