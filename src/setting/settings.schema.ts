@@ -6,7 +6,6 @@ import {
   ServiceMessages as ServiceType,
   ServiceMessageType,
 } from 'src/setting/interfaces/service-message.interface';
-import { ValidateNested } from 'class-validator';
 
 export interface IClearServiceMessages {
   clear_all: boolean;
@@ -39,7 +38,6 @@ export class Settings {
     required: true,
     ref: ServiceMessages.name,
   })
-  @ValidateNested()
   clear_system_messages: IClearServiceMessages;
 
   @ApiProperty()
