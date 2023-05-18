@@ -82,17 +82,12 @@ export class BotUpdate {
     await this.botService.checkByBot(ctx.chat.id, member, from);
 
     const botName = process.env.TELEGRAM_API_NAME;
-    if (isPrivate(ctx.chat.type)) {
-      await ctx.reply(
-        'Привет, я работаю только в группах, а не в личных сообщениях',
-      );
-      return;
-    } else {
+    if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
         if (member.username === botName) {
           // await ctx.reply('Здарова удаленщики');
-          const chat = await this.chatsService.findByTgId(ctx.chat.id);
-          if (!chat) {
+          const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
+          if (!isChat) {
             await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
           }
           return;
@@ -116,7 +111,7 @@ export class BotUpdate {
     if (member.is_bot && member.username === botName) {
       const chat = await this.chatsService.findByTgId(ctx.chat.id);
       if (chat) {
-        chat.remove();
+        await chat.remove();
         return;
       }
       return;
@@ -169,8 +164,8 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     if (flag) {
-      const oldChat = await this.chatsService.findByTgId(ctx.chat.id);
-      if (!oldChat) {
+      const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
+      if (!isChat) {
         await this.chatsService.create(chat as CreateChatDto, user.id);
       }
     }
@@ -209,13 +204,6 @@ export class BotUpdate {
     if (!msg) {
       return;
     }
-    if (!isPrivate(ctx.chat.type)) {
-      const chat = await this.chatsService.findByTgId(ctx.chat.id);
-      if (!chat) {
-        await this.chatsService.create(ctx.chat as CreateChatDto, user.id);
-      }
-    }
-
     if (isPrivate(ctx.chat.type)) {
       const { from } = ctx.message;
       if (msg === 'Получить токен') {
