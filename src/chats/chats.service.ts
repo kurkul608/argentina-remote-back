@@ -58,12 +58,12 @@ export class ChatsService {
       'tg_chat_info.chat_info.id': id,
     });
 
-    if (!chat) {
-      throw new HttpException(
-        'Document (Chat) not found',
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    // if (!chat) {
+    //   throw new HttpException(
+    //     'Document (Chat) not found',
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
 
     return chat;
   }

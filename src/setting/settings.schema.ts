@@ -2,9 +2,29 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
-import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
-import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
+import {
+  ServiceMessages as ServiceType,
+  ServiceMessageType,
+} from 'src/setting/interfaces/service-message.interface';
+import { ValidateNested } from 'class-validator';
 
+export interface IClearServiceMessages {
+  clear_all: boolean;
+  message_types: ServiceMessageType[];
+}
+
+@Schema()
+export class ServiceMessages {
+  @ApiProperty()
+  @Prop()
+  clear_all: boolean;
+
+  @ApiProperty()
+  @Prop({ type: [String], enum: ServiceType })
+  message_types: ServiceType[];
+}
+export const ServiceMessagesSchema =
+  SchemaFactory.createForClass(ServiceMessages);
 export type SettingsDocument = Settings & Document;
 
 @Schema()
@@ -14,11 +34,13 @@ export class Settings {
   remove_bots: boolean;
 
   @ApiProperty()
-  @Prop({ type: CleanServiceMessageBodyDto, required: true })
-  clear_system_messages: {
-    clear_all: boolean;
-    message_types: ServiceMessageType[];
-  };
+  @Prop({
+    type: ServiceMessagesSchema,
+    required: true,
+    ref: ServiceMessages.name,
+  })
+  @ValidateNested()
+  clear_system_messages: IClearServiceMessages;
 
   @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })
