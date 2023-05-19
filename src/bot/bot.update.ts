@@ -79,8 +79,6 @@ export class BotUpdate {
       ctx.message.message_id,
     );
 
-    await this.botService.checkByBot(ctx.chat.id, member, from);
-
     const botName = process.env.TELEGRAM_API_NAME;
     if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
@@ -89,11 +87,13 @@ export class BotUpdate {
           const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
           if (!isChat) {
             await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
+            return;
           }
-          return;
         }
       }
     }
+
+    await this.botService.checkByBot(ctx.chat.id, member, from);
   }
 
   @Public()
