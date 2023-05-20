@@ -87,8 +87,8 @@ export class BotUpdate {
             await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
             return;
           }
-          await this.botService.checkByBot(ctx.chat.id, member, from);
         }
+        await this.botService.checkByBot(ctx.chat.id, member, from);
       }
       await this.botService.checkSystemMessagesSettings(
         ctx.chat.id,
