@@ -24,7 +24,6 @@ import { Public } from '../auth/public-route.decorator';
 import { AuthService } from '../auth/auth.service';
 import tt from 'typegram';
 import { BotService } from 'src/bot/bot.service';
-import { SettingService } from 'src/setting/setting.service';
 
 @Update()
 export class BotUpdate {
@@ -38,8 +37,6 @@ export class BotUpdate {
     private readonly authService: AuthService,
     @Inject(forwardRef(() => BotService))
     private readonly botService: BotService,
-    @Inject(forwardRef(() => SettingService))
-    private readonly settingService: SettingService,
   ) {}
 
   @Public()
@@ -113,13 +110,12 @@ export class BotUpdate {
         return;
       }
       return;
-    } else {
-      await this.botService.checkSystemMessagesSettings(
-        ctx.chat.id,
-        'left_member',
-        ctx.message.message_id,
-      );
     }
+    await this.botService.checkSystemMessagesSettings(
+      ctx.chat.id,
+      'left_member',
+      ctx.message.message_id,
+    );
   }
 
   @Public()

@@ -187,11 +187,13 @@ export class BotService {
       await this.settingService.getSettings(['clear_system_messages'], chatId)
     )?.clear_system_messages;
     if (clearSystemMessages) {
-      if (clearSystemMessages.clear_all) {
+      if (clearSystemMessages?.clear_all) {
         await this.deleteMessageFromChat(chatId, messageId);
+        return;
       } else {
         if (clearSystemMessages.message_types.includes(serviceName)) {
           await this.deleteMessageFromChat(chatId, messageId);
+          return;
         }
       }
     }
