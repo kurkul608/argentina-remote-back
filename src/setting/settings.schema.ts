@@ -2,10 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
-import {
-  ServiceMessages as ServiceType,
-  ServiceMessageType,
-} from 'src/setting/interfaces/service-message.interface';
+import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 
 export interface IClearServiceMessages {
   clear_all: boolean;
@@ -19,8 +16,8 @@ export class ServiceMessages {
   clear_all: boolean;
 
   @ApiProperty()
-  @Prop({ type: [String], enum: ServiceType })
-  message_types: ServiceType[];
+  @Prop({ type: [String] })
+  message_types: ServiceMessageType[];
 }
 export const ServiceMessagesSchema =
   SchemaFactory.createForClass(ServiceMessages);
