@@ -81,8 +81,8 @@ export class BotUpdate {
     if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
         if (member.username === botName) {
-          const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
           // await ctx.reply('Здарова удаленщики');
+          const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
           if (!isChat) {
             await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
             return;
