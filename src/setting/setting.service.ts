@@ -66,7 +66,7 @@ export class SettingService {
         },
       );
     }
-    return _.pick(settingsField, settings);
+    return _.pick(settings, settingsField);
   }
 
   async createSettings(
@@ -107,6 +107,10 @@ export class SettingService {
       {
         ...dto,
         remove_bots: false,
+        clear_system_messages: {
+          clear_all: false,
+          message_types: serviceMessages,
+        },
       },
     );
 

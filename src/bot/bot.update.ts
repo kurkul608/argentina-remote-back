@@ -24,6 +24,7 @@ import { Public } from '../auth/public-route.decorator';
 import { AuthService } from '../auth/auth.service';
 import tt from 'typegram';
 import { BotService } from 'src/bot/bot.service';
+import { SettingService } from 'src/setting/setting.service';
 
 @Update()
 export class BotUpdate {
@@ -37,6 +38,8 @@ export class BotUpdate {
     private readonly authService: AuthService,
     @Inject(forwardRef(() => BotService))
     private readonly botService: BotService,
+    @Inject(forwardRef(() => SettingService))
+    private readonly settingService: SettingService,
   ) {}
 
   @Public()
@@ -74,25 +77,24 @@ export class BotUpdate {
     member: tt.User,
     @Ctx() ctx: Context,
   ) {
-    await this.botService.deleteMessageFromChat(
-      ctx.chat.id,
-      ctx.message.message_id,
-    );
-
-    await this.botService.checkByBot(ctx.chat.id, member, from);
-
     const botName = process.env.TELEGRAM_API_NAME;
     if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
         if (member.username === botName) {
-          // await ctx.reply('Здарова удаленщики');
           const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
+          // await ctx.reply('Здарова удаленщики');
           if (!isChat) {
             await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
+            return;
           }
-          return;
+          await this.botService.checkByBot(ctx.chat.id, member, from);
         }
       }
+      await this.botService.checkSystemMessagesSettings(
+        ctx.chat.id,
+        'new_member',
+        ctx.message.message_id,
+      );
     }
   }
 
@@ -103,10 +105,6 @@ export class BotUpdate {
     member: tt.User,
     @Ctx() ctx: Context,
   ) {
-    await this.botService.deleteMessageFromChat(
-      ctx.chat.id,
-      ctx.message.message_id,
-    );
     const botName = process.env.TELEGRAM_API_NAME;
     if (member.is_bot && member.username === botName) {
       const chat = await this.chatsService.findByTgId(ctx.chat.id);
@@ -115,14 +113,21 @@ export class BotUpdate {
         return;
       }
       return;
+    } else {
+      await this.botService.checkSystemMessagesSettings(
+        ctx.chat.id,
+        'left_member',
+        ctx.message.message_id,
+      );
     }
   }
 
   @Public()
   @On('pinned_message')
   async pinnedMessage(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'pinned_message',
       ctx.message.message_id,
     );
     return;
@@ -131,8 +136,9 @@ export class BotUpdate {
   @Public()
   @On('message_auto_delete_timer_changed')
   async autoDeleteTimer(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'auto_delete_timer_changed',
       ctx.message.message_id,
     );
   }
@@ -140,8 +146,9 @@ export class BotUpdate {
   @Public()
   @On('video_chat_started')
   async videoChatStarted(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'video_call_start',
       ctx.message.message_id,
     );
   }
@@ -149,8 +156,9 @@ export class BotUpdate {
   @Public()
   @On('video_chat_ended')
   async videoChatEnded(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'video_call_end',
       ctx.message.message_id,
     );
   }
