@@ -130,7 +130,6 @@ export class BotUpdate {
       'pinned_message',
       ctx.message.message_id,
     );
-    return;
   }
 
   @Public()
