@@ -17,7 +17,6 @@ import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
 import { RedisClientService } from 'src/redis-client/redis-client.service';
-import { serviceMessages } from 'src/setting/constants/sevice-message.constants';
 
 @Injectable()
 export class SettingService {
@@ -74,21 +73,6 @@ export class SettingService {
     return settings;
   }
 
-  async getSettingsWithTokenCheck(chatId: string, token: string) {
-    const { _id } = await this.authService.getUserInfo(token);
-
-    const chat = await this.chatsService.getChat(chatId);
-
-    if (String(chat.owner) !== String(_id)) {
-      throw new HttpException(
-        'You are not the chat owner',
-        HttpStatus.FORBIDDEN,
-      );
-    }
-
-    return this.getAllSettings(chat.tg_chat_info.chat_info.id);
-  }
-
   async createSettings(
     chatId: string,
     dto: CreateSettingsDto,
@@ -117,7 +101,7 @@ export class SettingService {
       remove_bots: false,
       clear_system_messages: {
         clear_all: false,
-        message_types: serviceMessages,
+        message_types: [],
       },
       chat: chat._id,
     });
@@ -127,6 +111,10 @@ export class SettingService {
       {
         ...dto,
         remove_bots: false,
+        clear_system_messages: {
+          clear_all: false,
+          message_types: [],
+        },
       },
     );
 
