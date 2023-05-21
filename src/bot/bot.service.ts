@@ -184,7 +184,10 @@ export class BotService {
     messageId: number,
   ) {
     const clearSystemMessages = (
-      await this.settingService.getSettings(['clear_system_messages'], chatId)
+      await this.settingService.getByChatIdSettings(
+        ['clear_system_messages'],
+        chatId,
+      )
     )?.clear_system_messages;
     if (clearSystemMessages) {
       if (clearSystemMessages?.clear_all) {

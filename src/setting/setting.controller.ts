@@ -72,9 +72,25 @@ export class SettingController {
   @ApiOperation({ summary: 'Get settings by chat method' })
   @UsePipes(MongoIdPipe)
   @Get('/by-chat/:chatId')
-  async getSettings(@Param('chatId') chatId: string, @Req() req) {
+  async getByChatIdSettings(@Param('chatId') chatId: string, @Req() req) {
     const bearer = req.headers.authorization;
     const token = bearer.split('Bearer ')[1];
-    return await this.settingService.getSettingsWithTokenCheck(chatId, token);
+    return await this.settingService.getSettingsByChatIdWithTokenCheck(
+      chatId,
+      token,
+    );
+  }
+
+  @ApiResponse({ status: 201, type: Settings })
+  @ApiOperation({ summary: 'Get settings method' })
+  @UsePipes(MongoIdPipe)
+  @Get('/:settingsId')
+  async getSettings(@Param('settingsId') settingsId: string, @Req() req) {
+    const bearer = req.headers.authorization;
+    const token = bearer.split('Bearer ')[1];
+    return await this.settingService.getSettingsWithTokenCheck(
+      settingsId,
+      token,
+    );
   }
 }
