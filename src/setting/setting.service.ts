@@ -48,10 +48,15 @@ export class SettingService {
     return `chatId-${chatId}-settings`;
   }
 
-  async getSettings(
+  async getByChatIdSettings(
     settingsField: Array<keyof Settings>,
     chatId: number,
   ): Promise<Partial<Settings>> {
+    const settings = await this.getAllSettings(chatId);
+    return _.pick(settingsField, settings);
+  }
+
+  async getAllSettings(chatId: number): Promise<Partial<Settings>> {
     let settings = await this.redisClientService.getData(
       this.getRedisKeyForSettings(chatId),
     );
@@ -66,7 +71,22 @@ export class SettingService {
         },
       );
     }
-    return _.pick(settingsField, settings);
+    return settings;
+  }
+
+  async getSettingsWithTokenCheck(chatId: string, token: string) {
+    const { _id } = await this.authService.getUserInfo(token);
+
+    const chat = await this.chatsService.getChat(chatId);
+
+    if (String(chat.owner) !== String(_id)) {
+      throw new HttpException(
+        'You are not the chat owner',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return this.getAllSettings(chat.tg_chat_info.chat_info.id);
   }
 
   async createSettings(

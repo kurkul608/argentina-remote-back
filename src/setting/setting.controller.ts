@@ -67,4 +67,14 @@ export class SettingController {
     const token = bearer.split('Bearer ')[1];
     return await this.settingService.updateSettings(settingsId, dto, token);
   }
+
+  @ApiResponse({ status: 201, type: Settings })
+  @ApiOperation({ summary: 'Get settings by chat method' })
+  @UsePipes(MongoIdPipe)
+  @Get('/by-chat/:chatId')
+  async getSettings(@Param('chatId') chatId: string, @Req() req) {
+    const bearer = req.headers.authorization;
+    const token = bearer.split('Bearer ')[1];
+    return await this.settingService.getSettingsWithTokenCheck(chatId, token);
+  }
 }

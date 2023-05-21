@@ -152,7 +152,7 @@ export class BotService {
   async checkByBot(chatId: number, user: tt.User, from?: tt.User) {
     if (isBot(user)) {
       const isNeedToRemove = (
-        await this.settingService.getSettings(['remove_bots'], chatId)
+        await this.settingService.getByChatIdSettings(['remove_bots'], chatId)
       )?.remove_bots;
 
       isNeedToRemove &&
