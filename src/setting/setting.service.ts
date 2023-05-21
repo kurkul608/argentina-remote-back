@@ -52,7 +52,7 @@ export class SettingService {
     chatId: number,
   ): Promise<Partial<Settings>> {
     const settings = await this.getAllSettings(chatId);
-    return _.pick(settingsField, settings);
+    return _.pick(settings, settingsField);
   }
 
   async getAllSettings(chatId: number): Promise<Partial<Settings>> {
