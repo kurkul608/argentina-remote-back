@@ -97,7 +97,7 @@ export class SettingService {
       remove_bots: false,
       clear_system_messages: {
         clear_all: false,
-        message_types: serviceMessages,
+        message_types: [],
       },
       chat: chat._id,
     });
