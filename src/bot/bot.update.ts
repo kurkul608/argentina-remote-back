@@ -74,11 +74,6 @@ export class BotUpdate {
     member: tt.User,
     @Ctx() ctx: Context,
   ) {
-    await this.botService.deleteMessageFromChat(
-      ctx.chat.id,
-      ctx.message.message_id,
-    );
-
     const botName = process.env.TELEGRAM_API_NAME;
     if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
@@ -90,10 +85,14 @@ export class BotUpdate {
             return;
           }
         }
+        await this.botService.checkByBot(ctx.chat.id, member, from);
       }
+      await this.botService.checkSystemMessagesSettings(
+        ctx.chat.id,
+        'new_member',
+        ctx.message.message_id,
+      );
     }
-
-    await this.botService.checkByBot(ctx.chat.id, member, from);
   }
 
   @Public()
@@ -103,10 +102,6 @@ export class BotUpdate {
     member: tt.User,
     @Ctx() ctx: Context,
   ) {
-    await this.botService.deleteMessageFromChat(
-      ctx.chat.id,
-      ctx.message.message_id,
-    );
     const botName = process.env.TELEGRAM_API_NAME;
     if (member.is_bot && member.username === botName) {
       const chat = await this.chatsService.findByTgId(ctx.chat.id);
@@ -116,23 +111,29 @@ export class BotUpdate {
       }
       return;
     }
+    await this.botService.checkSystemMessagesSettings(
+      ctx.chat.id,
+      'left_member',
+      ctx.message.message_id,
+    );
   }
 
   @Public()
   @On('pinned_message')
   async pinnedMessage(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'pinned_message',
       ctx.message.message_id,
     );
-    return;
   }
 
   @Public()
   @On('message_auto_delete_timer_changed')
   async autoDeleteTimer(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'auto_delete_timer_changed',
       ctx.message.message_id,
     );
   }
@@ -140,8 +141,9 @@ export class BotUpdate {
   @Public()
   @On('video_chat_started')
   async videoChatStarted(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'video_call_start',
       ctx.message.message_id,
     );
   }
@@ -149,8 +151,9 @@ export class BotUpdate {
   @Public()
   @On('video_chat_ended')
   async videoChatEnded(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'video_call_end',
       ctx.message.message_id,
     );
   }

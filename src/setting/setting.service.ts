@@ -17,7 +17,6 @@ import { ChatsService } from 'src/chats/chats.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UpdateSettingsDto } from 'src/setting/dto/update-settings.dto';
 import { RedisClientService } from 'src/redis-client/redis-client.service';
-import { serviceMessages } from 'src/setting/constants/sevice-message.constants';
 
 @Injectable()
 export class SettingService {
@@ -66,7 +65,7 @@ export class SettingService {
         },
       );
     }
-    return _.pick(settingsField, settings);
+    return _.pick(settings, settingsField);
   }
 
   async createSettings(
@@ -97,7 +96,7 @@ export class SettingService {
       remove_bots: false,
       clear_system_messages: {
         clear_all: false,
-        message_types: serviceMessages,
+        message_types: [],
       },
       chat: chat._id,
     });
@@ -107,6 +106,10 @@ export class SettingService {
       {
         ...dto,
         remove_bots: false,
+        clear_system_messages: {
+          clear_all: false,
+          message_types: [],
+        },
       },
     );
 
