@@ -47,17 +47,25 @@ export class SettingService {
     return `chatId-${chatId}-settings`;
   }
 
-  async getSettings(
+  async getByChatIdSettings(
     settingsField: Array<keyof Settings>,
     chatId: number,
   ): Promise<Partial<Settings>> {
+    const settings = await this.getAllSettings(chatId);
+    return _.pick(settings, settingsField);
+  }
+
+  async getAllSettings(chatId: number): Promise<Partial<Settings>> {
     let settings = await this.redisClientService.getData(
       this.getRedisKeyForSettings(chatId),
     );
 
     if (!settings) {
       const chat = await this.chatsService.findByTgId(chatId);
-      settings = await this.settingsModel.findOne({ chat: chat._id });
+      settings = await this.settingsModel
+        .findOne({ chat: chat._id })
+        .lean()
+        .exec();
       await this.redisClientService.setData(
         this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
         {
@@ -65,7 +73,45 @@ export class SettingService {
         },
       );
     }
-    return _.pick(settings, settingsField);
+    return settings;
+  }
+
+  async getSettingsByChatIdWithTokenCheck(chatId: string, token: string) {
+    const { _id } = await this.authService.getUserInfo(token);
+
+    const {
+      owner,
+      tg_chat_info: {
+        chat_info: { id },
+      },
+    } = await this.chatsService.getChat(chatId);
+
+    if (String(owner) !== String(_id)) {
+      throw new HttpException(
+        'You are not the chat owner',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return this.getAllSettings(id);
+  }
+
+  async getSettingsWithTokenCheck(settingsId: string, token: string) {
+    const { _id } = await this.authService.getUserInfo(token);
+    const settings = await this.settingsModel
+      .findById(settingsId)
+      .populate('chat');
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (String(settings.chat.owner) !== String(_id)) {
+      throw new HttpException(
+        'You are not the chat owner',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return _.omit(settings, 'chat');
   }
 
   async createSettings(
@@ -104,6 +150,7 @@ export class SettingService {
     await this.redisClientService.setData(
       this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
       {
+        _id: settings._id,
         ...dto,
         remove_bots: false,
         clear_system_messages: {
