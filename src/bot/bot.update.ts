@@ -74,30 +74,24 @@ export class BotUpdate {
     member: tt.User,
     @Ctx() ctx: Context,
   ) {
-    await this.botService.deleteMessageFromChat(
-      ctx.chat.id,
-      ctx.message.message_id,
-    );
-
-    await this.botService.checkByBot(ctx.chat.id, member, from);
-
     const botName = process.env.TELEGRAM_API_NAME;
-    if (isPrivate(ctx.chat.type)) {
-      await ctx.reply(
-        'Привет, я работаю только в группах, а не в личных сообщениях',
-      );
-      return;
-    } else {
+    if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
         if (member.username === botName) {
           // await ctx.reply('Здарова удаленщики');
-          const chat = await this.chatsService.findByTgId(ctx.chat.id);
-          if (!chat) {
+          const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
+          if (!isChat) {
             await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
+            return;
           }
-          return;
         }
+        await this.botService.checkByBot(ctx.chat.id, member, from);
       }
+      await this.botService.checkSystemMessagesSettings(
+        ctx.chat.id,
+        'new_member',
+        ctx.message.message_id,
+      );
     }
   }
 
@@ -108,36 +102,38 @@ export class BotUpdate {
     member: tt.User,
     @Ctx() ctx: Context,
   ) {
-    await this.botService.deleteMessageFromChat(
-      ctx.chat.id,
-      ctx.message.message_id,
-    );
     const botName = process.env.TELEGRAM_API_NAME;
     if (member.is_bot && member.username === botName) {
       const chat = await this.chatsService.findByTgId(ctx.chat.id);
       if (chat) {
-        chat.remove();
+        await chat.remove();
         return;
       }
       return;
     }
+    await this.botService.checkSystemMessagesSettings(
+      ctx.chat.id,
+      'left_member',
+      ctx.message.message_id,
+    );
   }
 
   @Public()
   @On('pinned_message')
   async pinnedMessage(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'pinned_message',
       ctx.message.message_id,
     );
-    return;
   }
 
   @Public()
   @On('message_auto_delete_timer_changed')
   async autoDeleteTimer(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'auto_delete_timer_changed',
       ctx.message.message_id,
     );
   }
@@ -145,8 +141,9 @@ export class BotUpdate {
   @Public()
   @On('video_chat_started')
   async videoChatStarted(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'video_call_start',
       ctx.message.message_id,
     );
   }
@@ -154,8 +151,9 @@ export class BotUpdate {
   @Public()
   @On('video_chat_ended')
   async videoChatEnded(@Ctx() ctx: Context) {
-    await this.botService.deleteMessageFromChat(
+    await this.botService.checkSystemMessagesSettings(
       ctx.chat.id,
+      'video_call_end',
       ctx.message.message_id,
     );
   }
@@ -169,8 +167,8 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     if (flag) {
-      const oldChat = await this.chatsService.findByTgId(ctx.chat.id);
-      if (!oldChat) {
+      const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
+      if (!isChat) {
         await this.chatsService.create(chat as CreateChatDto, user.id);
       }
     }
@@ -209,13 +207,6 @@ export class BotUpdate {
     if (!msg) {
       return;
     }
-    if (!isPrivate(ctx.chat.type)) {
-      const chat = await this.chatsService.findByTgId(ctx.chat.id);
-      if (!chat) {
-        await this.chatsService.create(ctx.chat as CreateChatDto, user.id);
-      }
-    }
-
     if (isPrivate(ctx.chat.type)) {
       const { from } = ctx.message;
       if (msg === 'Получить токен') {

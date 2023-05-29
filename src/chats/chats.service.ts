@@ -53,6 +53,13 @@ export class ChatsService {
     return chat;
   }
 
+  async checkChatExist(chatId: number) {
+    const chatsCount = await this.chatModel.countDocuments({
+      'tg_chat_info.chat_info.id': chatId,
+    });
+    return chatsCount > 0;
+  }
+
   async findByTgId(id: number) {
     const chat = await this.chatModel.findOne({
       'tg_chat_info.chat_info.id': id,
