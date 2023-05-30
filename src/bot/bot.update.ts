@@ -199,6 +199,44 @@ export class BotUpdate {
   }
 
   @Public()
+  @On('new_chat_photo')
+  async chatPhotoChanged(
+    @Ctx()
+    ctx: NarrowedContext<
+      Context,
+      {
+        update_id: number;
+        message: tt.Message.MigrateFromChatIdMessage;
+      } & tt.Update
+    >,
+  ) {
+    await this.botService.checkSystemMessagesSettings(
+      ctx.chat.id,
+      'new_chat_photo',
+      ctx.message.message_id,
+    );
+  }
+
+  @Public()
+  @On('new_chat_title')
+  async chatTitleChanged(
+    @Ctx()
+    ctx: NarrowedContext<
+      Context,
+      {
+        update_id: number;
+        message: tt.Message.MigrateFromChatIdMessage;
+      } & tt.Update
+    >,
+  ) {
+    await this.botService.checkSystemMessagesSettings(
+      ctx.chat.id,
+      'new_chat_title',
+      ctx.message.message_id,
+    );
+  }
+
+  @Public()
   @On('message')
   async messageHandler(
     @Message('text') msg: string,
