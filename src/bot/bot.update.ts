@@ -158,7 +158,6 @@ export class BotUpdate {
       'video_call_end',
       ctx.message.message_id,
     );
-    // await ctx.replyWithPhoto("", {protect_content: { }})
   }
 
   @Public()
