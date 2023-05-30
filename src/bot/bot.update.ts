@@ -18,14 +18,16 @@ import {
 import { ChatsService } from '../chats/chats.service';
 import { isPrivate } from './bot.utils';
 import { CreateChatDto } from '../chats/create-chat.dto';
-import { forwardRef, Inject } from '@nestjs/common';
+import { forwardRef, Inject, UseFilters } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { Public } from '../auth/public-route.decorator';
 import { AuthService } from '../auth/auth.service';
 import tt from 'typegram';
 import { BotService } from 'src/bot/bot.service';
+import { TelegrafExceptionFilter } from 'src/commoon/filters/telegraf-exception.filter';
 
 @Update()
+@UseFilters(TelegrafExceptionFilter)
 export class BotUpdate {
   constructor(
     @InjectBot() private readonly bot: Telegraf<Context>,
