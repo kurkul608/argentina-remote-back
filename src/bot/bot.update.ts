@@ -14,7 +14,6 @@ import {
   NarrowedContext,
   // TelegrafContext,
 } from 'telegraf';
-import * as fs from 'fs';
 // import { editedMessage, channelPost } from "telegraf/filters";
 import { ChatsService } from '../chats/chats.service';
 import { isGroup, isPrivate } from './bot.utils';
