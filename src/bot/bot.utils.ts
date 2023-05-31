@@ -13,6 +13,10 @@ export const isPrivate = (chatType: ChatType) => {
   return chatType === 'private';
 };
 
+export const isGroup = (chatType: ChatType) => {
+  return chatType === 'group';
+};
+
 export const isBot = (user: tt.User) => {
   return user.is_bot;
 };

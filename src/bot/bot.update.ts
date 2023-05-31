@@ -14,9 +14,10 @@ import {
   NarrowedContext,
   // TelegrafContext,
 } from 'telegraf';
+import * as fs from 'fs';
 // import { editedMessage, channelPost } from "telegraf/filters";
 import { ChatsService } from '../chats/chats.service';
-import { isPrivate } from './bot.utils';
+import { isGroup, isPrivate } from './bot.utils';
 import { CreateChatDto } from '../chats/create-chat.dto';
 import { forwardRef, Inject, UseFilters } from '@nestjs/common';
 import { UserService } from '../users/user.service';
@@ -261,6 +262,14 @@ export class BotUpdate {
             : {},
         );
       }
+    }
+
+    if (isGroup(ctx.chat.type)) {
+      await this.botService.checkMessagesByChannel(
+        ctx.chat.id,
+        user,
+        ctx.message.message_id,
+      );
     }
     return;
   }

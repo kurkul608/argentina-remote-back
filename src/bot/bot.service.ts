@@ -178,6 +178,7 @@ export class BotService {
         }));
     return;
   }
+
   async checkSystemMessagesSettings(
     chatId: number,
     serviceName: ServiceMessageType,
@@ -199,6 +200,22 @@ export class BotService {
           return;
         }
       }
+    }
+  }
+
+  async checkMessagesByChannel(
+    chatId: number,
+    user: tt.User,
+    messageId: number,
+  ) {
+    if (isBot(user)) {
+      await this.deleteMessageFromChat(chatId, messageId).then(() => {
+        return this.bot.telegram.sendMessage(
+          chatId,
+          'In the group is prohibited to write on behalf of channels',
+        );
+      });
+      return;
     }
   }
 }
