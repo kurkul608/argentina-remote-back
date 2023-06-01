@@ -7,4 +7,6 @@ export const serviceMessages: ServiceMessageType[] = [
   'video_call_end',
   'auto_delete_timer_changed',
   'pinned_message',
+  'new_chat_photo',
+  'new_chat_title',
 ];

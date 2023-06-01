@@ -16,7 +16,7 @@ import {
 } from 'telegraf';
 // import { editedMessage, channelPost } from "telegraf/filters";
 import { ChatsService } from '../chats/chats.service';
-import { isPrivate } from './bot.utils';
+import { isGroup, isPrivate } from './bot.utils';
 import { CreateChatDto } from '../chats/create-chat.dto';
 import { forwardRef, Inject, UseFilters } from '@nestjs/common';
 import { UserService } from '../users/user.service';
@@ -77,6 +77,7 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     const botName = process.env.TELEGRAM_API_NAME;
+    // if (isGroup(ctx.chat.type)){}
     if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
         if (member.username === botName) {
@@ -94,6 +95,7 @@ export class BotUpdate {
         'new_member',
         ctx.message.message_id,
       );
+      return;
     }
   }
 
@@ -196,6 +198,44 @@ export class BotUpdate {
       await this.bot.telegram.sendMessage(newId, 'Chat data has been updated');
       return;
     }
+  }
+
+  @Public()
+  @On('new_chat_photo')
+  async chatPhotoChanged(
+    @Ctx()
+    ctx: NarrowedContext<
+      Context,
+      {
+        update_id: number;
+        message: tt.Message.MigrateFromChatIdMessage;
+      } & tt.Update
+    >,
+  ) {
+    await this.botService.checkSystemMessagesSettings(
+      ctx.chat.id,
+      'new_chat_photo',
+      ctx.message.message_id,
+    );
+  }
+
+  @Public()
+  @On('new_chat_title')
+  async chatTitleChanged(
+    @Ctx()
+    ctx: NarrowedContext<
+      Context,
+      {
+        update_id: number;
+        message: tt.Message.MigrateFromChatIdMessage;
+      } & tt.Update
+    >,
+  ) {
+    await this.botService.checkSystemMessagesSettings(
+      ctx.chat.id,
+      'new_chat_title',
+      ctx.message.message_id,
+    );
   }
 
   @Public()
