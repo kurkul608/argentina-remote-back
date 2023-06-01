@@ -144,6 +144,9 @@ export class SettingService {
         clear_all: false,
         message_types: [],
       },
+      clear_messages_by_channel: {
+        isEnable: false,
+      },
       chat: chat._id,
     });
 
@@ -156,6 +159,9 @@ export class SettingService {
         clear_system_messages: {
           clear_all: false,
           message_types: [],
+        },
+        clear_messages_by_channel: {
+          isEnable: false,
         },
       },
     );
