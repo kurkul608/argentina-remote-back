@@ -45,17 +45,17 @@ export interface IClearByChannelMessages {
 @Schema()
 export class ByChannelMessages {
   @ApiProperty()
-  @Prop()
+  @Prop({ type: Boolean, required: true })
   isEnable: boolean;
 
   @ApiProperty()
-  @Prop({ required: false })
+  @Prop({ type: String, required: false })
   text?: string;
 }
 
 @Schema()
 export class ServiceMessages {
-  @ApiProperty()
+  @ApiProperty({ type: Boolean, required: true })
   @Prop()
   clear_all: boolean;
 
