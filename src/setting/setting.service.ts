@@ -148,6 +148,10 @@ export class SettingService {
         isEnable: false,
       },
       chat: chat._id,
+      greeting: {
+        is_enable: false,
+        previous_greetings: [],
+      },
     });
 
     await this.redisClientService.setData(
@@ -156,12 +160,17 @@ export class SettingService {
         _id: settings._id,
         ...dto,
         remove_bots: false,
+        chat: chat._id,
         clear_system_messages: {
           clear_all: false,
           message_types: [],
         },
         clear_messages_by_channel: {
           isEnable: false,
+        },
+        greeting: {
+          is_enable: false,
+          previous_greetings: [],
         },
       },
     );
