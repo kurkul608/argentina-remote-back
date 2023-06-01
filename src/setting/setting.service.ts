@@ -213,6 +213,29 @@ export class SettingService {
 
     return this.settingsModel.findById(settings.id);
   }
+
+  async updateSettingsWithOutToken(chatId: number, dto: UpdateSettingsDto) {
+    const chat = await this.chatsService.findByTgId(chatId);
+
+    const settings = await this.settingsModel.findOne({ chat: chat._id });
+
+    await settings.updateOne({ ...dto });
+
+    const redisData = await this.redisClientService.getData(
+      this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
+    );
+
+    await this.redisClientService.setData(
+      this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
+      {
+        ...redisData,
+        ...dto,
+      },
+    );
+
+    return this.settingsModel.findById(settings.id);
+  }
+
   async getChatAdmins(id: string) {
     return await this.botService.getChatTGAdmins(id);
   }
