@@ -4,6 +4,33 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 
+export interface IGreeting {
+  is_enable: boolean;
+  previous_greetings: number[];
+  message?: string;
+  clear_time?: string;
+}
+
+@Schema()
+export class Greeting {
+  @ApiProperty()
+  @Prop({ type: Boolean, required: true })
+  is_enable: boolean;
+
+  @ApiProperty()
+  @Prop({ type: [Number], required: true })
+  previous_greetings: number[];
+
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  message?: string;
+
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  clear_time?: string;
+}
+export const GreetingSchema = SchemaFactory.createForClass(Greeting);
+
 export interface IClearServiceMessages {
   clear_all: boolean;
   message_types: ServiceMessageType[];
@@ -21,6 +48,7 @@ export class ServiceMessages {
 }
 export const ServiceMessagesSchema =
   SchemaFactory.createForClass(ServiceMessages);
+
 export type SettingsDocument = Settings & Document;
 
 @Schema()
@@ -36,6 +64,14 @@ export class Settings {
     ref: ServiceMessages.name,
   })
   clear_system_messages: IClearServiceMessages;
+
+  @ApiProperty()
+  @Prop({
+    type: GreetingSchema,
+    required: true,
+    ref: Greeting.name,
+  })
+  greeting: IGreeting;
 
   @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })
