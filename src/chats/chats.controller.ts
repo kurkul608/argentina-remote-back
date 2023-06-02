@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Post, Query, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UsePipes,
+} from '@nestjs/common';
 import { ChatsService } from './chats.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateChatDto } from './create-chat.dto';
@@ -24,9 +32,11 @@ export class ChatsController {
     required: true,
   })
   @Get()
-  getAll(@Query() query: GetChatsQueryDto) {
+  getAll(@Query() query: GetChatsQueryDto, @Req() req) {
     const { limit, q, isHidden, offset } = query;
-    return this.chatsService.getAll(limit, offset, isHidden, q);
+    const bearer = req.headers.authorization;
+    const token = bearer.split('Bearer ')[1];
+    return this.chatsService.getAll(limit, offset, token, isHidden, q);
   }
   @ApiOperation({ summary: 'Return chat information' })
   @ApiResponse({ status: 200, type: Object })

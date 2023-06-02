@@ -29,6 +29,8 @@ export class ChatsService {
     private readonly userService: UserService,
     @Inject(forwardRef(() => SettingService))
     private readonly settingsService: SettingService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   async create(createChatDto: CreateChatDto, userTgId: number) {
@@ -114,8 +116,18 @@ export class ChatsService {
     }
     return chat;
   }
-  async getAll(limit: number, offset: number, isHidden?: boolean, q?: string) {
-    const filters = {};
+  async getAll(
+    limit: number,
+    offset: number,
+    token: string,
+    isHidden?: boolean,
+    q?: string,
+  ) {
+    const { _id } = await this.authService.getUserInfo(token);
+
+    const filters = {
+      owner: _id,
+    };
     if (typeof isHidden === 'boolean') {
       filters['is_hidden'] = isHidden;
     }
