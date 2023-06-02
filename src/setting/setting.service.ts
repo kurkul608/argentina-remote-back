@@ -208,7 +208,7 @@ export class SettingService {
       this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
       settingsId,
     );
-    console.log(settingsId);
+
     return this.settingsModel.findById(settings.id);
   }
 
