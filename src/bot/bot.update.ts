@@ -78,13 +78,9 @@ export class BotUpdate {
   ) {
     const botName = process.env.TELEGRAM_API_NAME;
 
+    //IF Group
     if (isGroup(ctx.chat.type)) {
-      await this.botService.checkSystemMessagesSettings(
-        ctx.chat.id,
-        'new_member',
-        ctx.message.message_id,
-      );
-
+      // If this is this bot and new chat
       if (member.is_bot) {
         if (member.username === botName) {
           const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
@@ -93,13 +89,25 @@ export class BotUpdate {
               ctx.chat as CreateChatDto,
               from.id,
             );
-            return;
           }
+          return;
         }
+      }
+
+      //If not this bot - should remove system messages
+      await this.botService.checkSystemMessagesSettings(
+        ctx.chat.id,
+        'new_member',
+        ctx.message.message_id,
+      );
+
+      //If another bot
+      if (member.is_bot) {
         await this.botService.checkByBot(ctx.chat.id, member, from);
         return;
       }
 
+      //If not bot - then send greeting to user
       await this.botService.generateGreeting(ctx.chat.id);
     }
   }
