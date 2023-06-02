@@ -10,6 +10,7 @@ import { SetAdminPermissionsBodyDto } from 'src/setting/dto/body/set-admin-permi
 import { isBot } from 'src/bot/bot.utils';
 import { SettingService } from 'src/setting/setting.service';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
+import { CreateChatDto } from 'src/chats/create-chat.dto';
 
 // type Hideable<B> = B & { hide?: boolean };
 @Injectable()
@@ -20,6 +21,8 @@ export class BotService {
     private readonly chatService: ChatsService,
     @Inject(forwardRef(() => SettingService))
     private readonly settingService: SettingService,
+    @Inject(forwardRef(() => ChatsService))
+    private readonly chatsService: ChatsService,
   ) {}
 
   async sendMessage(
@@ -64,6 +67,11 @@ export class BotService {
         }
       });
     return;
+  }
+
+  async registerNewChat(chatDto: CreateChatDto, ownerId: number) {
+    const chat = await this.chatsService.create(chatDto, ownerId);
+    return chat;
   }
 
   async getChatInfoById(chatId: number) {
@@ -217,5 +225,42 @@ export class BotService {
       });
       return;
     }
+  }
+
+  async generateGreeting(chatId: number) {
+    const greeting = (
+      await this.settingService.getByChatIdSettings(['greeting'], chatId)
+    )?.greeting;
+
+    if (greeting && greeting.is_enable) {
+      //TODO pmolchanov - change to sendMessage service in future
+      await this.bot.telegram
+        .sendMessage(
+          chatId,
+          greeting.message ? greeting.message : 'Welcome to chat',
+        )
+        .then(async (data) => {
+          await this.settingService.updateSettingsWithOutToken(chatId, {
+            greeting: {
+              ...greeting,
+              previous_greetings: [
+                ...greeting.previous_greetings,
+                data.message_id,
+              ],
+            },
+          });
+        });
+
+      if (
+        greeting.clear_last_message &&
+        greeting.previous_greetings.length > 0
+      ) {
+        await this.deleteMessageFromChat(
+          chatId,
+          greeting.previous_greetings[greeting.previous_greetings.length - 1],
+        );
+      }
+    }
+    return;
   }
 }

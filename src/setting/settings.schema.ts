@@ -7,7 +7,8 @@ import { IsOptional } from 'class-validator';
 
 export interface IGreeting {
   is_enable: boolean;
-  previous_greetings: number[];
+  previous_greetings?: number[];
+  clear_last_message?: boolean;
   message?: string;
   clear_time?: string;
 }
@@ -19,7 +20,7 @@ export class Greeting {
   is_enable: boolean;
 
   @ApiProperty()
-  @Prop({ type: [Number], required: true })
+  @Prop({ type: [Number], required: false })
   previous_greetings: number[];
 
   @ApiProperty()
@@ -29,7 +30,12 @@ export class Greeting {
   @ApiProperty()
   @Prop({ type: String, required: false })
   clear_time?: string;
+
+  @ApiProperty()
+  @Prop({ type: Boolean, required: false })
+  clear_last_message?: boolean;
 }
+
 export const GreetingSchema = SchemaFactory.createForClass(Greeting);
 
 export interface IClearServiceMessages {

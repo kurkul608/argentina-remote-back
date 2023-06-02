@@ -77,25 +77,30 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     const botName = process.env.TELEGRAM_API_NAME;
-    // if (isGroup(ctx.chat.type)){}
-    if (!isPrivate(ctx.chat.type)) {
-      if (member.is_bot) {
-        if (member.username === botName) {
-          // await ctx.reply('Здарова удаленщики');
-          const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
-          if (!isChat) {
-            await this.chatsService.create(ctx.chat as CreateChatDto, from.id);
-            return;
-          }
-        }
-        await this.botService.checkByBot(ctx.chat.id, member, from);
-      }
+
+    if (isGroup(ctx.chat.type)) {
       await this.botService.checkSystemMessagesSettings(
         ctx.chat.id,
         'new_member',
         ctx.message.message_id,
       );
-      return;
+
+      if (member.is_bot) {
+        if (member.username === botName) {
+          const isChat = await this.chatsService.checkChatExist(ctx.chat.id);
+          if (!isChat) {
+            await this.botService.registerNewChat(
+              ctx.chat as CreateChatDto,
+              from.id,
+            );
+            return;
+          }
+        }
+        await this.botService.checkByBot(ctx.chat.id, member, from);
+        return;
+      }
+
+      await this.botService.generateGreeting(ctx.chat.id);
     }
   }
 
