@@ -269,6 +269,14 @@ export class BotUpdate {
         );
       }
     }
+
+    if (isGroup(ctx.chat.type)) {
+      await this.botService.checkMessagesByChannel(
+        ctx.chat.id,
+        user,
+        ctx.message.message_id,
+      );
+    }
     return;
   }
 

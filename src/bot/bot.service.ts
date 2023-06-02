@@ -186,6 +186,7 @@ export class BotService {
         }));
     return;
   }
+
   async checkSystemMessagesSettings(
     chatId: number,
     serviceName: ServiceMessageType,
@@ -207,6 +208,30 @@ export class BotService {
           return;
         }
       }
+    }
+  }
+
+  async checkMessagesByChannel(
+    chatId: number,
+    user: tt.User,
+    messageId: number,
+  ) {
+    if (isBot(user)) {
+      const clearMessageByChannel = (
+        await this.settingService.getByChatIdSettings(
+          ['clear_messages_by_channel'],
+          chatId,
+        )
+      )?.clear_messages_by_channel;
+      if (clearMessageByChannel.isEnable)
+        await this.deleteMessageFromChat(chatId, messageId).then(() => {
+          return this.bot.telegram.sendMessage(
+            chatId,
+            clearMessageByChannel.text ||
+              'In the group is prohibited to write on behalf of channels',
+          );
+        });
+      return;
     }
   }
 
