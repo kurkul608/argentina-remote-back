@@ -204,21 +204,22 @@ export class SettingService {
     }
 
     await settings.updateOne({ ...dto });
-
     await this.setRedisData(
       this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
+      settingsId,
     );
-
+    console.log(settingsId);
     return this.settingsModel.findById(settings.id);
   }
 
-  async setRedisData(settingsId: string) {
-    const redisData = await this.redisClientService.getData(settingsId);
+  async setRedisData(redisId: string, settingsId: string) {
+    const redisData = await this.redisClientService.getData(redisId);
     const settings_data = await this.settingsModel
-      .findOne({ chat: settingsId })
+      .findOne({ _id: settingsId })
       .lean()
       .exec();
-    await this.redisClientService.setData(settingsId, {
+    console.log(settings_data);
+    await this.redisClientService.setData(redisId, {
       ...redisData,
       ...settings_data,
     });

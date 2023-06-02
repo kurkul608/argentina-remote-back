@@ -217,12 +217,20 @@ export class BotService {
     messageId: number,
   ) {
     if (isBot(user)) {
-      await this.deleteMessageFromChat(chatId, messageId).then(() => {
-        return this.bot.telegram.sendMessage(
+      const clearMessageByChannel = (
+        await this.settingService.getByChatIdSettings(
+          ['clear_messages_by_channel'],
           chatId,
-          'In the group is prohibited to write on behalf of channels',
-        );
-      });
+        )
+      )?.clear_messages_by_channel;
+      if (clearMessageByChannel.isEnable)
+        await this.deleteMessageFromChat(chatId, messageId).then(() => {
+          return this.bot.telegram.sendMessage(
+            chatId,
+            clearMessageByChannel.text ||
+              'In the group is prohibited to write on behalf of channels',
+          );
+        });
       return;
     }
   }
