@@ -77,6 +77,7 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     const botName = process.env.TELEGRAM_API_NAME;
+    // if (isGroup(ctx.chat.type)){}
     if (!isPrivate(ctx.chat.type)) {
       if (member.is_bot) {
         if (member.username === botName) {
@@ -94,6 +95,7 @@ export class BotUpdate {
         'new_member',
         ctx.message.message_id,
       );
+      return;
     }
   }
 
