@@ -6,6 +6,10 @@ import { ServiceMessageType } from 'src/setting/interfaces/service-message.inter
 import { serviceMessages } from 'src/setting/constants/sevice-message.constants';
 import { GreetingBodyDto } from 'src/setting/dto/body/greeting-body.dto';
 import { IGreeting } from 'src/setting/settings.schema';
+import {
+  CleanMessageByChannelBodyDto,
+  CleanMessageByChannelDto,
+} from 'src/setting/dto/body/clean-message-by-channel-body.dto';
 
 export class UpdateSettingsDto {
   @ApiProperty({
@@ -32,6 +36,19 @@ export class UpdateSettingsDto {
     clear_all: boolean;
     message_types: ServiceMessageType[];
   };
+
+  @ApiProperty({
+    example: {
+      isEnable: true,
+      text: 'Тебе нельзятакое постить',
+    },
+    description: 'Should bot remove messages',
+    required: false,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CleanMessageByChannelDto)
+  clear_messages_by_channel?: CleanMessageByChannelDto;
 
   @ApiProperty({
     example: {

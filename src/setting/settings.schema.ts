@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
+import { IsOptional } from 'class-validator';
 
 export interface IGreeting {
   is_enable: boolean;
@@ -42,9 +43,25 @@ export interface IClearServiceMessages {
   message_types: ServiceMessageType[];
 }
 
+export interface IClearByChannelMessages {
+  isEnable: boolean;
+  text?: string;
+}
+
+@Schema()
+export class ByChannelMessages {
+  @ApiProperty()
+  @Prop({ type: Boolean, required: true })
+  isEnable: boolean;
+
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  text?: string;
+}
+
 @Schema()
 export class ServiceMessages {
-  @ApiProperty()
+  @ApiProperty({ type: Boolean, required: true })
   @Prop()
   clear_all: boolean;
 
@@ -52,6 +69,10 @@ export class ServiceMessages {
   @Prop({ type: [String] })
   message_types: ServiceMessageType[];
 }
+
+export const MessagesByChannelSchema =
+  SchemaFactory.createForClass(ByChannelMessages);
+
 export const ServiceMessagesSchema =
   SchemaFactory.createForClass(ServiceMessages);
 
@@ -78,6 +99,14 @@ export class Settings {
     ref: Greeting.name,
   })
   greeting: IGreeting;
+
+  @ApiProperty()
+  @Prop({
+    type: MessagesByChannelSchema,
+    required: true,
+    ref: ByChannelMessages.name,
+  })
+  clear_messages_by_channel: IClearByChannelMessages;
 
   @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })

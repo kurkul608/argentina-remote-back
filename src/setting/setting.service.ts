@@ -144,6 +144,9 @@ export class SettingService {
         clear_all: false,
         message_types: [],
       },
+      clear_messages_by_channel: {
+        isEnable: false,
+      },
       chat: chat._id,
       greeting: {
         is_enable: false,
@@ -161,6 +164,9 @@ export class SettingService {
         clear_system_messages: {
           clear_all: false,
           message_types: [],
+        },
+        clear_messages_by_channel: {
+          isEnable: false,
         },
         greeting: {
           is_enable: false,
@@ -199,19 +205,23 @@ export class SettingService {
 
     await settings.updateOne({ ...dto });
 
-    const redisData = await this.redisClientService.getData(
+    await this.setRedisData(
       this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
-    );
-
-    await this.redisClientService.setData(
-      this.getRedisKeyForSettings(chat.tg_chat_info.chat_info.id),
-      {
-        ...redisData,
-        ...dto,
-      },
     );
 
     return this.settingsModel.findById(settings.id);
+  }
+
+  async setRedisData(settingsId: string) {
+    const redisData = await this.redisClientService.getData(settingsId);
+    const settings_data = await this.settingsModel
+      .findOne({ chat: settingsId })
+      .lean()
+      .exec();
+    await this.redisClientService.setData(settingsId, {
+      ...redisData,
+      ...settings_data,
+    });
   }
 
   async updateSettingsWithOutToken(chatId: number, dto: UpdateSettingsDto) {
