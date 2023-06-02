@@ -214,14 +214,13 @@ export class SettingService {
 
   async setRedisData(redisId: string, settingsId: string) {
     const redisData = await this.redisClientService.getData(redisId);
-    const settings_data = await this.settingsModel
+    const settingsData = await this.settingsModel
       .findOne({ _id: settingsId })
       .lean()
       .exec();
-    console.log(settings_data);
     await this.redisClientService.setData(redisId, {
       ...redisData,
-      ...settings_data,
+      ...settingsData,
     });
   }
 
