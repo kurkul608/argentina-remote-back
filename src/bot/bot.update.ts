@@ -25,6 +25,8 @@ import { AuthService } from '../auth/auth.service';
 import tt from 'typegram';
 import { BotService } from 'src/bot/bot.service';
 import { TelegrafExceptionFilter } from 'src/commoon/filters/telegraf-exception.filter';
+import * as fs from 'fs';
+import { Animation, MessageEntity } from 'typegram/message';
 
 @Update()
 @UseFilters(TelegrafExceptionFilter)
@@ -252,12 +254,34 @@ export class BotUpdate {
   }
 
   @Public()
+  @On('sticker')
+  async stickerHandler(
+    @Message('from') user: tt.User,
+    @Message('message_id') messageId: number,
+    @Ctx() ctx: Context,
+  ) {
+    await this.botService.stickerCleaner(ctx.chat.id, messageId, 'sticker');
+    return;
+  }
+  @Public()
+  @On('animation')
+  async animationHandler(
+    @Message('from') user: tt.User,
+    @Message('message_id') messageId: number,
+    @Ctx() ctx: Context,
+  ) {
+    await this.botService.stickerCleaner(ctx.chat.id, messageId, 'gif');
+    return;
+  }
+
+  @Public()
   @On('message')
   async messageHandler(
     @Message('text') msg: string,
     @Message('from') user: tt.User,
-    @Ctx()
-    ctx: Context,
+    @Message('message_id') messageId: number,
+    @Ctx() ctx: Context,
+    @Message('entities') entities?: MessageEntity[],
   ) {
     if (!msg) {
       return;
@@ -279,6 +303,15 @@ export class BotUpdate {
     }
 
     if (isGroup(ctx.chat.type)) {
+      if (entities?.find((entity) => entity.type === 'custom_emoji')) {
+        // await ctx.reply('This is custom emoji');
+        await this.botService.stickerCleaner(
+          ctx.chat.id,
+          messageId,
+          'customEmoji',
+        );
+        return;
+      }
       await this.botService.checkMessagesByChannel(
         ctx.chat.id,
         user,
