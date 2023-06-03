@@ -157,6 +157,10 @@ export class SettingService {
         remove_emoji: false,
         remove_gif: false,
       },
+      ban_words: {
+        is_enabled: false,
+        dictionary: [],
+      },
     });
 
     await this.redisClientService.setData(
@@ -181,6 +185,10 @@ export class SettingService {
           remove_stickers: false,
           remove_emoji: false,
           remove_gif: false,
+        },
+        ban_words: {
+          is_enabled: false,
+          dictionary: [],
         },
       },
     );

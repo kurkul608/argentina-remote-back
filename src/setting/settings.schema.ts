@@ -5,6 +5,23 @@ import { Chat } from 'src/chats/chats.schema';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { IsOptional } from 'class-validator';
 
+export interface IBanWords {
+  is_enabled: boolean;
+  dictionary: string[];
+}
+
+@Schema()
+export class BanWords {
+  @ApiProperty()
+  @Prop({ type: Boolean, required: true })
+  is_enabled: boolean;
+
+  @Prop({ type: [String], required: true })
+  dictionary: string[];
+}
+
+export const BanWordsSchema = SchemaFactory.createForClass(BanWords);
+
 export interface IStickerCleaner {
   remove_stickers: boolean;
   remove_gif: boolean;
@@ -137,6 +154,14 @@ export class Settings {
     ref: StickerCleaner.name,
   })
   sticker_cleaner: IStickerCleaner;
+
+  @ApiProperty()
+  @Prop({
+    type: BanWordsSchema,
+    required: true,
+    ref: BanWords.name,
+  })
+  ban_words: IBanWords;
 
   @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })

@@ -5,9 +5,14 @@ import { CleanServiceMessageDto } from 'src/setting/dto/body/clean-service-messa
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { serviceMessages } from 'src/setting/constants/sevice-message.constants';
 import { GreetingBodyDto } from 'src/setting/dto/body/greeting-body.dto';
-import { IGreeting, IStickerCleaner } from 'src/setting/settings.schema';
+import {
+  IBanWords,
+  IGreeting,
+  IStickerCleaner,
+} from 'src/setting/settings.schema';
 import { CleanMessageByChannelDto } from 'src/setting/dto/body/clean-message-by-channel-body.dto';
 import { StickerCleanerBodyDto } from 'src/setting/dto/body/sticker-cleaner-body.dto';
+import { BanWordsBodyDto } from 'src/setting/dto/body/ban-words-body.dto';
 
 export class UpdateSettingsDto {
   @ApiProperty({
@@ -77,4 +82,17 @@ export class UpdateSettingsDto {
   @ValidateNested()
   @Type(() => StickerCleanerBodyDto)
   sticker_cleaner?: IStickerCleaner;
+
+  @ApiProperty({
+    example: {
+      is_enabled: false,
+      dictionary: [],
+    },
+    description: 'Ban words config',
+    required: false,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BanWordsBodyDto)
+  ban_words?: IBanWords;
 }
