@@ -4,6 +4,7 @@ import { Context, Markup, Telegraf } from 'telegraf';
 import { MessageDocument } from '../message/message.schema';
 import { ButtonTypeEnum } from '../message/constants/button-type.enum';
 import tt from 'typegram';
+import _ from 'lodash';
 import { ChatsService } from '../chats/chats.service';
 import { SetRestrictPermissionsBodyDto } from 'src/setting/dto/body/set-restrict-permissions-body.dto';
 import { SetAdminPermissionsBodyDto } from 'src/setting/dto/body/set-admin-permissions-body.dto';
@@ -301,12 +302,9 @@ export class BotService {
   }
 
   checkWordExists(str: string, words: string[]): boolean {
-    for (const word of words) {
-      if (str.includes(word)) {
-        return true;
-      }
-    }
-    return false;
+    // return _.some(words, (word) => _.isEqual(_.toLower(str), _.toLower(word)));
+    const strWords = _.words(_.toLower(str)); // Split the string into words
+    return _.some(strWords, (strWord) => _.isEqual(strWord, _.toLower(words)));
   }
 
   async banWordFilter(chatId: number, messageId: number, message: string) {
