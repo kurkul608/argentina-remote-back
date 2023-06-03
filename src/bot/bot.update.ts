@@ -310,12 +310,12 @@ export class BotUpdate {
         );
         return;
       }
-      await this.botService.banWordFilter(ctx.chat.id, messageId, msg);
       await this.botService.checkMessagesByChannel(
         ctx.chat.id,
         user,
         messageId,
       );
+      await this.botService.banWordFilter(ctx.chat.id, messageId, msg);
     }
   }
 
