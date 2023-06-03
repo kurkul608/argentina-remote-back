@@ -302,6 +302,11 @@ export class BotUpdate {
     }
 
     if (isGroup(ctx.chat.type)) {
+      await this.botService.checkMessagesByChannel(
+        ctx.chat.id,
+        user,
+        messageId,
+      );
       if (entities?.find((entity) => entity.type === 'custom_emoji')) {
         await this.botService.stickerCleaner(
           ctx.chat.id,
@@ -311,11 +316,6 @@ export class BotUpdate {
         return;
       }
       await this.botService.banWordFilter(ctx.chat.id, messageId, msg);
-      await this.botService.checkMessagesByChannel(
-        ctx.chat.id,
-        user,
-        messageId,
-      );
     }
   }
 
