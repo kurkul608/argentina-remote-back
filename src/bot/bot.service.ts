@@ -299,4 +299,27 @@ export class BotService {
         break;
     }
   }
+
+  checkWordExists(str: string, words: string[]): boolean {
+    for (const word of words) {
+      if (str.includes(word)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async banWordFilter(chatId: number, messageId: number, message: string) {
+    const banWords = (
+      await this.settingService.getByChatIdSettings(['ban_words'], chatId)
+    )?.ban_words;
+
+    if (
+      banWords.is_enabled &&
+      this.checkWordExists(message, banWords.dictionary)
+    ) {
+      await this.deleteMessageFromChat(chatId, messageId);
+    }
+    return;
+  }
 }
