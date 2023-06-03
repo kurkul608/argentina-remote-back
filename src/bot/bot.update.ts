@@ -275,17 +275,14 @@ export class BotUpdate {
   }
 
   @Public()
-  @On('message')
-  async messageHandler(
+  @On('text')
+  async onTextHandler(
     @Message('text') msg: string,
     @Message('from') user: tt.User,
     @Message('message_id') messageId: number,
     @Ctx() ctx: Context,
     @Message('entities') entities?: MessageEntity[],
   ) {
-    if (!msg) {
-      return;
-    }
     if (isPrivate(ctx.chat.type)) {
       const { from } = ctx.message;
       if (msg === 'Получить токен') {
@@ -304,7 +301,6 @@ export class BotUpdate {
 
     if (isGroup(ctx.chat.type)) {
       if (entities?.find((entity) => entity.type === 'custom_emoji')) {
-        // await ctx.reply('This is custom emoji');
         await this.botService.stickerCleaner(
           ctx.chat.id,
           messageId,
@@ -318,6 +314,21 @@ export class BotUpdate {
         ctx.message.message_id,
       );
     }
+  }
+
+  @Public()
+  @On('message')
+  async messageHandler(
+    @Message('text') msg: string,
+    // @Message('from') user: tt.User,
+    // @Message('message_id') messageId: number,
+    // @Ctx() ctx: Context,
+    // @Message('entities') entities?: MessageEntity[],
+  ) {
+    if (!msg) {
+      return;
+    }
+
     return;
   }
 
