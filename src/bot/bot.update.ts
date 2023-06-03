@@ -308,10 +308,11 @@ export class BotUpdate {
         );
         return;
       }
+      await this.botService.banWordFilter(ctx.chat.id, messageId, msg);
       await this.botService.checkMessagesByChannel(
         ctx.chat.id,
         user,
-        ctx.message.message_id,
+        messageId,
       );
     }
   }
