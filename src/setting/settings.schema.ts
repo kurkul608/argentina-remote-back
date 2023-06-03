@@ -5,6 +5,28 @@ import { Chat } from 'src/chats/chats.schema';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { IsOptional } from 'class-validator';
 
+export interface IStickerCleaner {
+  remove_stickers: boolean;
+  remove_gif: boolean;
+  remove_emoji: boolean;
+}
+
+@Schema()
+export class StickerCleaner {
+  @ApiProperty()
+  @Prop({ type: Boolean, required: true })
+  remove_stickers: boolean;
+
+  @Prop({ type: Boolean, required: true })
+  remove_gif: boolean;
+
+  @Prop({ type: Boolean, required: true })
+  remove_emoji: boolean;
+}
+
+export const StickerCleanerSchema =
+  SchemaFactory.createForClass(StickerCleaner);
+
 export interface IGreeting {
   is_enable: boolean;
   previous_greetings?: number[];
@@ -107,6 +129,14 @@ export class Settings {
     ref: ByChannelMessages.name,
   })
   clear_messages_by_channel: IClearByChannelMessages;
+
+  @ApiProperty()
+  @Prop({
+    type: StickerCleanerSchema,
+    required: true,
+    ref: StickerCleaner.name,
+  })
+  sticker_cleaner: IStickerCleaner;
 
   @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })

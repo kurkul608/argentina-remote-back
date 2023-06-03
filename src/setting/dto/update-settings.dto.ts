@@ -5,11 +5,9 @@ import { CleanServiceMessageDto } from 'src/setting/dto/body/clean-service-messa
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { serviceMessages } from 'src/setting/constants/sevice-message.constants';
 import { GreetingBodyDto } from 'src/setting/dto/body/greeting-body.dto';
-import { IGreeting } from 'src/setting/settings.schema';
-import {
-  CleanMessageByChannelBodyDto,
-  CleanMessageByChannelDto,
-} from 'src/setting/dto/body/clean-message-by-channel-body.dto';
+import { IGreeting, IStickerCleaner } from 'src/setting/settings.schema';
+import { CleanMessageByChannelDto } from 'src/setting/dto/body/clean-message-by-channel-body.dto';
+import { StickerCleanerBodyDto } from 'src/setting/dto/body/sticker-cleaner-body.dto';
 
 export class UpdateSettingsDto {
   @ApiProperty({
@@ -65,4 +63,18 @@ export class UpdateSettingsDto {
   @ValidateNested()
   @Type(() => GreetingBodyDto)
   greeting?: IGreeting;
+
+  @ApiProperty({
+    example: {
+      remove_stickers: false,
+      remove_emoji: false,
+      remove_gif: false,
+    },
+    description: 'Sticker cleaner config',
+    required: false,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => StickerCleanerBodyDto)
+  sticker_cleaner?: IStickerCleaner;
 }
