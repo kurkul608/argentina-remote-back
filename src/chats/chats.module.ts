@@ -7,6 +7,7 @@ import { BotModule } from '../bot/bot.module';
 import { PaymentModule } from '../payment/payment.module';
 import { UserModule } from 'src/users/user.module';
 import { SettingModule } from 'src/setting/setting.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SettingModule } from 'src/setting/setting.module';
     forwardRef(() => BotModule),
     forwardRef(() => PaymentModule),
     forwardRef(() => UserModule),
+    forwardRef(() => AuthModule),
     forwardRef(() => SettingModule),
   ],
   controllers: [ChatsController],

@@ -152,6 +152,11 @@ export class SettingService {
         is_enable: false,
         previous_greetings: [],
       },
+      sticker_cleaner: {
+        remove_stickers: false,
+        remove_emoji: false,
+        remove_gif: false,
+      },
     });
 
     await this.redisClientService.setData(
@@ -171,6 +176,11 @@ export class SettingService {
         greeting: {
           is_enable: false,
           previous_greetings: [],
+        },
+        sticker_cleaner: {
+          remove_stickers: false,
+          remove_emoji: false,
+          remove_gif: false,
         },
       },
     );

@@ -271,4 +271,32 @@ export class BotService {
     }
     return;
   }
+
+  async stickerCleaner(
+    chatId: number,
+    messageId: number,
+    type: 'sticker' | 'gif' | 'customEmoji',
+  ) {
+    const stickerCleaner = (
+      await this.settingService.getByChatIdSettings(['sticker_cleaner'], chatId)
+    )?.sticker_cleaner;
+
+    switch (type) {
+      case 'sticker':
+        if (stickerCleaner?.remove_stickers) {
+          await this.deleteMessageFromChat(chatId, messageId);
+        }
+        break;
+      case 'customEmoji':
+        if (stickerCleaner?.remove_emoji) {
+          await this.deleteMessageFromChat(chatId, messageId);
+        }
+        break;
+      case 'gif':
+        if (stickerCleaner?.remove_gif) {
+          await this.deleteMessageFromChat(chatId, messageId);
+        }
+        break;
+    }
+  }
 }
