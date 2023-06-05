@@ -82,6 +82,29 @@ export interface IClearServiceMessages {
   message_types: ServiceMessageType[];
 }
 
+export interface IMessageCharacterLimit {
+  is_enable: boolean;
+  character_limit?: number;
+  message?: string;
+}
+
+@Schema()
+export class MessageLengthLimit {
+  @ApiProperty()
+  @Prop({ type: Boolean, required: true })
+  is_enable: boolean;
+
+  @ApiProperty()
+  @Prop({ type: Number, required: false })
+  character_limit?: number;
+
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  message?: string;
+}
+export const MessageLengthLimitSchema =
+  SchemaFactory.createForClass(MessageLengthLimit);
+
 export interface IClearByChannelMessages {
   isEnable: boolean;
   text?: string;
@@ -162,6 +185,14 @@ export class Settings {
     ref: BanWords.name,
   })
   ban_words: IBanWords;
+
+  @ApiProperty()
+  @Prop({
+    type: MessageLengthLimitSchema,
+    required: true,
+    ref: MessageLengthLimit.name,
+  })
+  message_character_limit: IMessageCharacterLimit;
 
   @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })
