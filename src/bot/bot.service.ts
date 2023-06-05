@@ -307,6 +307,39 @@ export class BotService {
     return _.some(strWords, (strWord) => _.isEqual(strWord, _.toLower(words)));
   }
 
+  async checkMessageCharacterLimit(
+    chatId: number,
+    messageId: number,
+    senderId: number,
+    message: string,
+  ) {
+    const characterLimit = (
+      await this.settingService.getByChatIdSettings(
+        ['message_character_limit'],
+        chatId,
+      )
+    )?.message_character_limit;
+
+    if (characterLimit.is_enable) {
+      if (message.length > characterLimit.character_limit) {
+        const data = await this.chatService.findByTgId(chatId);
+        const admins = await this.getChatTGAdmins(data._id);
+        const adminsArr = admins.data.map((user) => user.user.id);
+        if (adminsArr.includes(senderId)) {
+          return;
+        }
+        await this.deleteMessageFromChat(chatId, messageId).then(() => {
+          return this.bot.telegram.sendMessage(
+            chatId,
+            characterLimit.message ||
+              `It's forbidden to use more then ${characterLimit.character_limit} characters`,
+          );
+        });
+      }
+    }
+    return;
+  }
+
   async banWordFilter(chatId: number, messageId: number, message: string) {
     const banWords = (
       await this.settingService.getByChatIdSettings(['ban_words'], chatId)

@@ -314,6 +314,12 @@ export class BotUpdate {
         user,
         messageId,
       );
+      await this.botService.checkMessageCharacterLimit(
+        ctx.chat.id,
+        messageId,
+        ctx.from.id,
+        msg,
+      );
     }
   }
 
