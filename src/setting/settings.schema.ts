@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { IsOptional } from 'class-validator';
+import { MAX_MESSAGE_LENGTH } from 'src/commoon/constants/message.constants';
 
 export interface IBanWords {
   is_enabled: boolean;
@@ -95,8 +96,8 @@ export class MessageLengthLimit {
   is_enable: boolean;
 
   @ApiProperty()
-  @Prop({ type: Number, required: false })
-  character_limit?: number;
+  @Prop({ type: Number, required: false, default: MAX_MESSAGE_LENGTH })
+  character_limit: number;
 
   @ApiProperty()
   @Prop({ type: String, required: false })

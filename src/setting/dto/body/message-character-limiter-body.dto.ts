@@ -8,8 +8,7 @@ export class MessageCharacterLimiterBodyDto {
 
   @ApiProperty()
   @IsNumber()
-  @IsOptional()
-  character_limit?: number;
+  character_limit: number;
 
   @ApiProperty()
   @IsString()
