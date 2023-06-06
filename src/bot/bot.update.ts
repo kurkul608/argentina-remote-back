@@ -315,6 +315,12 @@ export class BotUpdate {
         user,
         messageId,
       );
+      await this.botService.checkMessageCharacterLimit(
+        ctx.chat.id,
+        messageId,
+        ctx.from.id,
+        msg,
+      );
       await this.botService.banWordFilter(ctx.chat.id, messageId, msg);
     }
   }
