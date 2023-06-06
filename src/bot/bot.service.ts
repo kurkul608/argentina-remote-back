@@ -322,12 +322,6 @@ export class BotService {
 
     if (characterLimit.is_enable) {
       if (message.length > characterLimit.character_limit) {
-        const data = await this.chatService.findByTgId(chatId);
-        const admins = await this.getChatTGAdmins(data._id);
-        const adminsArr = admins.data.map((user) => user.user.id);
-        if (adminsArr.includes(senderId)) {
-          return;
-        }
         await this.deleteMessageFromChat(chatId, messageId).then(() => {
           return this.bot.telegram.sendMessage(
             chatId,
