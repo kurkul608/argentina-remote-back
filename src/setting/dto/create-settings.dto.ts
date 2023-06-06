@@ -3,7 +3,11 @@ import { IsBoolean, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CleanServiceMessageBodyDto } from 'src/setting/dto/body/clean-service-message-body.dto';
 import { CleanMessageByChannelBodyDto } from 'src/setting/dto/body/clean-message-by-channel-body.dto';
-import { IClearByChannelMessages } from 'src/setting/settings.schema';
+import {
+  IClearByChannelMessages,
+  IMessageCharacterLimit,
+} from 'src/setting/settings.schema';
+import { MessageCharacterLimiterBodyDto } from 'src/setting/dto/body/message-character-limiter-body.dto';
 
 export class CreateSettingsDto {
   @ApiProperty({
@@ -32,4 +36,9 @@ export class CreateSettingsDto {
   @ValidateNested()
   @Type(() => CleanMessageByChannelBodyDto)
   clear_messages_by_channel?: IClearByChannelMessages;
+
+  @ApiProperty({})
+  @ValidateNested()
+  @Type(() => MessageCharacterLimiterBodyDto)
+  message_character_limit?: IMessageCharacterLimit;
 }

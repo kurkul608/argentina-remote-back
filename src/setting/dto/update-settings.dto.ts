@@ -8,11 +8,13 @@ import { GreetingBodyDto } from 'src/setting/dto/body/greeting-body.dto';
 import {
   IBanWords,
   IGreeting,
+  IMessageCharacterLimit,
   IStickerCleaner,
 } from 'src/setting/settings.schema';
 import { CleanMessageByChannelDto } from 'src/setting/dto/body/clean-message-by-channel-body.dto';
 import { StickerCleanerBodyDto } from 'src/setting/dto/body/sticker-cleaner-body.dto';
 import { BanWordsBodyDto } from 'src/setting/dto/body/ban-words-body.dto';
+import { MessageCharacterLimiterBodyDto } from 'src/setting/dto/body/message-character-limiter-body.dto';
 
 export class UpdateSettingsDto {
   @ApiProperty({
@@ -95,4 +97,13 @@ export class UpdateSettingsDto {
   @ValidateNested()
   @Type(() => BanWordsBodyDto)
   ban_words?: IBanWords;
+
+  @ApiProperty({
+    description:
+      'Should the bot delete messages that are larger than the set limit',
+    required: false,
+  })
+  @ValidateNested()
+  @Type(() => MessageCharacterLimiterBodyDto)
+  message_character_limit?: IMessageCharacterLimit;
 }

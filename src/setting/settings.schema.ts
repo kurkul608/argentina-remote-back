@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Chat } from 'src/chats/chats.schema';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { IsOptional } from 'class-validator';
+import { MAX_MESSAGE_LENGTH } from 'src/commoon/constants/message.constants';
 
 export interface IBanWords {
   is_enabled: boolean;
@@ -81,6 +82,29 @@ export interface IClearServiceMessages {
   clear_all: boolean;
   message_types: ServiceMessageType[];
 }
+
+export interface IMessageCharacterLimit {
+  is_enable: boolean;
+  character_limit?: number;
+  message?: string;
+}
+
+@Schema()
+export class MessageLengthLimit {
+  @ApiProperty()
+  @Prop({ type: Boolean, required: true })
+  is_enable: boolean;
+
+  @ApiProperty()
+  @Prop({ type: Number, required: false, default: MAX_MESSAGE_LENGTH })
+  character_limit: number;
+
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  message?: string;
+}
+export const MessageLengthLimitSchema =
+  SchemaFactory.createForClass(MessageLengthLimit);
 
 export interface IClearByChannelMessages {
   isEnable: boolean;
@@ -162,6 +186,14 @@ export class Settings {
     ref: BanWords.name,
   })
   ban_words: IBanWords;
+
+  @ApiProperty()
+  @Prop({
+    type: MessageLengthLimitSchema,
+    required: true,
+    ref: MessageLengthLimit.name,
+  })
+  message_character_limit: IMessageCharacterLimit;
 
   @ApiProperty()
   @Prop({ required: true, type: Types.ObjectId, ref: Chat.name })

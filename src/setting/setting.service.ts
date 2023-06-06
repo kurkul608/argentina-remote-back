@@ -161,6 +161,9 @@ export class SettingService {
         is_enabled: false,
         dictionary: [],
       },
+      message_character_limit: {
+        is_enable: false,
+      },
     });
 
     await this.redisClientService.setData(
@@ -189,6 +192,9 @@ export class SettingService {
         ban_words: {
           is_enabled: false,
           dictionary: [],
+        },
+        message_character_limit: {
+          is_enable: false,
         },
       },
     );
