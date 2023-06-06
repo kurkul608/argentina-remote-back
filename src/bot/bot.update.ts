@@ -261,6 +261,7 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     await this.botService.stickerCleaner(ctx.chat.id, messageId, 'sticker');
+    await this.botService.checkMessagesByChannel(ctx.chat.id, user, messageId);
     return;
   }
   @Public()
@@ -271,6 +272,7 @@ export class BotUpdate {
     @Ctx() ctx: Context,
   ) {
     await this.botService.stickerCleaner(ctx.chat.id, messageId, 'gif');
+    await this.botService.checkMessagesByChannel(ctx.chat.id, user, messageId);
     return;
   }
 
@@ -308,7 +310,6 @@ export class BotUpdate {
         );
         return;
       }
-      await this.botService.banWordFilter(ctx.chat.id, messageId, msg);
       await this.botService.checkMessagesByChannel(
         ctx.chat.id,
         user,
@@ -320,6 +321,7 @@ export class BotUpdate {
         ctx.from.id,
         msg,
       );
+      await this.botService.banWordFilter(ctx.chat.id, messageId, msg);
     }
   }
 
