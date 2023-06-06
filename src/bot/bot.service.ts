@@ -12,6 +12,7 @@ import { isBot } from 'src/bot/bot.utils';
 import { SettingService } from 'src/setting/setting.service';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { CreateChatDto } from 'src/chats/create-chat.dto';
+import { ClientProxy } from '@nestjs/microservices';
 
 // type Hideable<B> = B & { hide?: boolean };
 @Injectable()
@@ -23,8 +24,8 @@ export class BotService {
     @Inject(forwardRef(() => SettingService))
     private readonly settingService: SettingService,
     @Inject(forwardRef(() => ChatsService))
-    private readonly chatsService: ChatsService,
-  ) {}
+    private readonly chatsService: ChatsService, // @Inject('CRON')
+  ) {} // private readonly cronClient: ClientProxy,
 
   async sendMessage(
     chatId: number,

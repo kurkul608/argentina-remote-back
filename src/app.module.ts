@@ -1,6 +1,4 @@
 import { CacheInterceptor, CacheModule, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatsModule } from './chats/chats.module';
@@ -17,6 +15,7 @@ import { UserModule } from './users/user.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { PostModule } from './post/post.module';
 import { SettingModule } from './setting/setting.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -31,6 +30,12 @@ import { SettingModule } from './setting/setting.module';
         port: +process.env.REDIS_PORT,
       },
     }),
+    ClientsModule.register([
+      {
+        name: 'CRON',
+        transport: Transport.TCP,
+      },
+    ]),
     CacheModule.register(),
     // CacheModule.register({
     //   store: redisStore,
@@ -51,9 +56,7 @@ import { SettingModule } from './setting/setting.module';
     PostModule,
     SettingModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
