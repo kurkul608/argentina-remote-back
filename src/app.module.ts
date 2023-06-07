@@ -1,6 +1,4 @@
 import { CacheInterceptor, CacheModule, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatsModule } from './chats/chats.module';
@@ -17,28 +15,21 @@ import { UserModule } from './users/user.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { PostModule } from './post/post.module';
 import { SettingModule } from './setting/setting.module';
+import { RabbitMqModule } from './rabbit-mq/rabbit-mq.module';
+import * as process from 'process';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(
-      process.env.MONGO_URI,
-      // `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@mongodb_container:27017`,
-    ),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     RedisModule.forRoot({
       config: {
         host: process.env.REDIS,
         port: +process.env.REDIS_PORT,
       },
     }),
+
     CacheModule.register(),
-    // CacheModule.register({
-    //   store: redisStore,
-    //   host: 'localhost',
-    //   port: 6379,
-    //   ttl: 2000,
-    //   isGlobal: true,
-    // }),
     ChatsModule,
     MessageModule,
     BotModule,
@@ -50,10 +41,9 @@ import { SettingModule } from './setting/setting.module';
     UserModule,
     PostModule,
     SettingModule,
+    RabbitMqModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,

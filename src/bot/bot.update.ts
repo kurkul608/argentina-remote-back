@@ -25,8 +25,7 @@ import { AuthService } from '../auth/auth.service';
 import tt from 'typegram';
 import { BotService } from 'src/bot/bot.service';
 import { TelegrafExceptionFilter } from 'src/commoon/filters/telegraf-exception.filter';
-import * as fs from 'fs';
-import { Animation, MessageEntity } from 'typegram/message';
+import { MessageEntity } from 'typegram/message';
 
 @Update()
 @UseFilters(TelegrafExceptionFilter)

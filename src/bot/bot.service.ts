@@ -12,6 +12,12 @@ import { isBot } from 'src/bot/bot.utils';
 import { SettingService } from 'src/setting/setting.service';
 import { ServiceMessageType } from 'src/setting/interfaces/service-message.interface';
 import { CreateChatDto } from 'src/chats/create-chat.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { CronDeleteMessageEvent } from 'src/bot/events/cron-delete-message.event';
+import { RabbitMqService } from 'src/rabbit-mq/rabbit-mq.service';
+import process from 'process';
+import { CronPattern } from 'src/bot/patterns/cron.pattern';
+import { BotPattern } from 'src/bot/patterns/bot.pattern';
 
 // type Hideable<B> = B & { hide?: boolean };
 @Injectable()
@@ -24,7 +30,27 @@ export class BotService {
     private readonly settingService: SettingService,
     @Inject(forwardRef(() => ChatsService))
     private readonly chatsService: ChatsService,
-  ) {}
+    @Inject(forwardRef(() => RabbitMqService))
+    private readonly rabbitMQService: RabbitMqService,
+    @Inject('CRON_SERVICE')
+    private readonly cronClient: ClientProxy,
+  ) {
+    this.startListeningToQueue();
+  }
+
+  async startListeningToQueue(): Promise<void> {
+    await this.rabbitMQService.listenToQueue(
+      process.env.MAIN_QUEUE_NAME,
+      async (message) => {
+        if (message.pattern === BotPattern.deleteMessage) {
+          await this.deleteMessageFromChat(
+            message.data.chat_id,
+            message.data.message_id,
+          );
+        }
+      },
+    );
+  }
 
   async sendMessage(
     chatId: number,
@@ -226,11 +252,18 @@ export class BotService {
       )?.clear_messages_by_channel;
       if (clearMessageByChannel.isEnable)
         await this.deleteMessageFromChat(chatId, messageId).then(() => {
-          return this.bot.telegram.sendMessage(
-            chatId,
-            clearMessageByChannel.text ||
-              'In the group is prohibited to write on behalf of channels',
-          );
+          return this.bot.telegram
+            .sendMessage(
+              chatId,
+              clearMessageByChannel.text ||
+                'In the group is prohibited to write on behalf of channels',
+            )
+            .then(async (data) => {
+              await this.cronClient.emit(
+                CronPattern.delayedDelete,
+                new CronDeleteMessageEvent(chatId, data.message_id, 10000),
+              );
+            });
         });
       return;
     }
