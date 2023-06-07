@@ -15,35 +15,21 @@ import { UserModule } from './users/user.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { PostModule } from './post/post.module';
 import { SettingModule } from './setting/setting.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { RabbitMqModule } from './rabbit-mq/rabbit-mq.module';
+import * as process from 'process';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(
-      process.env.MONGO_URI,
-      // `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@mongodb_container:27017`,
-    ),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     RedisModule.forRoot({
       config: {
         host: process.env.REDIS,
         port: +process.env.REDIS_PORT,
       },
     }),
-    ClientsModule.register([
-      {
-        name: 'CRON',
-        transport: Transport.TCP,
-      },
-    ]),
+
     CacheModule.register(),
-    // CacheModule.register({
-    //   store: redisStore,
-    //   host: 'localhost',
-    //   port: 6379,
-    //   ttl: 2000,
-    //   isGlobal: true,
-    // }),
     ChatsModule,
     MessageModule,
     BotModule,
@@ -55,6 +41,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     UserModule,
     PostModule,
     SettingModule,
+    RabbitMqModule,
   ],
   providers: [
     {
